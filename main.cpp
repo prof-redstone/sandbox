@@ -4,18 +4,17 @@
 #include <cmath>
 #include "main.h"
 #include "simulation.h"
+#include "particle.h"
 
 using namespace std;
 using namespace sf;
 
-Simulation simulation;
+Simulation simulation = Simulation();
 
 int main()
 {
     int width = 600;
     int height = 500;
-    
-
 
     sf::RenderWindow window(sf::VideoMode(width, height), "sandbox simulation");
 
@@ -33,8 +32,12 @@ int main()
             simulation.inputHandler(event, window);
 
         }
+        window.clear(Color::Black);
 
-        window.clear();
+        //simulation.updateMove();
+        //simulation.move();
+        simulation.render(window);
+
         window.display();
     }
 
