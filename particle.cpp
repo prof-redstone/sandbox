@@ -3,23 +3,44 @@
 #include <vector>
 #include <cmath>
 #include "main.h"
-#include "simulation.h"
 #include "particle.h"
+#include "outils.h"
 
 using namespace std;
 using namespace sf;
 
+int getRand(int a, int b);
 
-Particle::Particle(int Itype, vector<int> Ipos = { 0,0 }) {
+enum type {
+	air,
+	sand,
+	water,
+	stone,
+	acide
+};
+
+
+Particle::Particle(int Itype, vector<int> Ipos, vector<vector<Particle*>> *particleCollect) {
 	type = Itype;
 	position = Ipos;
-	if (type == 0) {
+	particleCollect = particleCollect;
+
+	//cout << this << endl;
+	srand((unsigned)this);
+	//cout << getRand(5,10);
+
+	if (type == air) {
 		color = Color(50, 50, 50);
 	}
-	else if (type == 1) {
-		color = Color(200, 150, 50);
+	else if (type == sand) {
+		color = Color(getRand(200, 210), 150, 50);
 	}
+}
 
-	cout << "nouvelle particule de type " + to_string(type) << endl;
-	
+int getRand(int a, int b) {
+	return (rand() % (b - a)) + a;
+}
+
+void Particle::checkmove() {
+	//cout << "oui";
 }

@@ -1,5 +1,4 @@
-﻿  main.cpp
-  particle.cpp
-  simulation.cpp
-  Génération de code en cours...
+﻿  simulation.cpp
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(59,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(60,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Debug\sandbox.exe

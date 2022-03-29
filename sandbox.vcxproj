@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="outils.cpp" />
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="simulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="outils.h" />
     <ClInclude Include="particle.h" />
     <ClInclude Include="simulation.h" />
   </ItemGroup>

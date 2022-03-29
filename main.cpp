@@ -5,6 +5,7 @@
 #include "main.h"
 #include "simulation.h"
 #include "particle.h"
+#include "outils.h"
 
 using namespace std;
 using namespace sf;
@@ -14,11 +15,10 @@ Simulation simulation = Simulation();
 int main()
 {
     int width = 600;
-    int height = 500;
+    int height = 600;
 
     sf::RenderWindow window(sf::VideoMode(width, height), "sandbox simulation");
 
-    simulation.test();
 
     while (window.isOpen())
     {
@@ -34,7 +34,7 @@ int main()
         }
         window.clear(Color::Black);
 
-        //simulation.updateMove();
+        simulation.updateMove();
         //simulation.move();
         simulation.render(window);
 

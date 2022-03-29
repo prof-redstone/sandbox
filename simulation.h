@@ -17,7 +17,7 @@ public:
 	sf::Sprite sprite;
 
 
-	void test();
+	void replace(int type, int a, int b);
 	int inputHandler(sf::Event event, sf::RenderWindow& window);
 	void updateMove();
 	void move();
@@ -25,17 +25,14 @@ public:
 
 	//for test
 
-	vector<int> pos = { 50,50 };
-	Particle part = Particle(1, pos);
+	int nbRows;
+	int nbCols;
+	vector<vector<Particle*>> particleCollect;
+
 
 	Simulation();
 
 };
-
-
-
-
-
 
 
 
