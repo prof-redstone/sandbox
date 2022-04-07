@@ -1,4 +1,8 @@
 ﻿  simulation.cpp
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(59,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(60,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(24,22): warning C4311: 'cast de type' : troncation de pointeur de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(24,22): warning C4302: 'cast de type' : troncation de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(93,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(94,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(118,88): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(119,88): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Debug\sandbox.exe

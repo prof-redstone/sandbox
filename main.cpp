@@ -12,13 +12,19 @@ using namespace sf;
 
 Simulation simulation = Simulation();
 
+
+
 int main()
 {
     int width = 600;
     int height = 600;
 
-    sf::RenderWindow window(sf::VideoMode(width, height), "sandbox simulation");
+    int iterationPerFrame = 1;
 
+    sf::RenderWindow window(sf::VideoMode(width, height), "sandbox simulation");
+    window.setFramerateLimit(60);
+
+    Clock clock;
 
     while (window.isOpen())
     {
@@ -26,20 +32,31 @@ int main()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) {
-
                 window.close();
             }
-            simulation.inputHandler(event, window);
-
+            String commande = simulation.inputHandler(event, window);
+            if (commande == "FPS UP") {
+                iterationPerFrame++;
+            }
         }
         window.clear(Color::Black);
 
-        simulation.updateMove();
-        //simulation.move();
+        for (int i = 0; i < iterationPerFrame; i++){
+            simulation.updateMove();
+            simulation.move();
+        }
         simulation.render(window);
+
+        Time time = clock.getElapsedTime();
+        //cout << 1.0f / time.asSeconds() << endl;
+        clock.restart().asSeconds();
 
         window.display();
     }
 
     return 0;
+}
+
+void Commande(String str) {
+    
 }
