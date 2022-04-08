@@ -34,7 +34,7 @@ int main()
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
-            String commande = simulation.inputHandler(event, window);
+            String commande = simulation.InputHandler(event, window);
             if (commande == "FPS UP") {
                 iterationPerFrame++;
             }
@@ -42,10 +42,10 @@ int main()
         window.clear(Color::Black);
 
         for (int i = 0; i < iterationPerFrame; i++){
-            simulation.updateMove();
-            simulation.move();
+            simulation.UpdateMove();
+            simulation.Move();
         }
-        simulation.render(window);
+        simulation.Render(window);
 
         Time time = clock.getElapsedTime();
         //cout << 1.0f / time.asSeconds() << endl;

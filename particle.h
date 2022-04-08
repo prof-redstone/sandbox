@@ -25,7 +25,7 @@ public:
 
 	Particle(int Itype, vector<int> Ipos);
 
-	int getRand(int a, int b);
+	int GetRand(int a, int b);
 	sf::Color HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI);
 
 };

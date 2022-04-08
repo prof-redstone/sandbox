@@ -10,11 +10,10 @@
 using namespace sf;
 using namespace std;
 
-
 enum type {air,sand,water,stone,acide};
-enum moveType { _swap, _replace };
+enum MoveType { _Swap, _Replace };
 
-
+//initialisation of gride and other parameter
 Simulation::Simulation() {
 	srand((unsigned)time(0));
 	image.create(50, 50, Color::Cyan);
@@ -34,26 +33,32 @@ Simulation::Simulation() {
 		}
 	}
 
-	replace(sand, 10, 10);
+	Replace(sand, 10, 10);
+
+	RArray(10);
 }
 
-int Simulation::getRand(int a, int b) {
+//to get a random Interger
+int Simulation::GetRand(int a, int b) {
+	if (b - a == 0) { return a; }
 	return (rand() % (b - a)) + a;
 }
 
-void Simulation::replace(int type, int a , int b ){
+//Replace specific cell in grid to another
+void Simulation::Replace(int type, int a , int b ){
 	delete particleCollect[a][b];
 	particleCollect[a][b] = new Particle(type, { a,b });
 }
 
-void Simulation::swap(int x1, int y1, int x2, int y2) {
+//Swap to cells in grid
+void Simulation::Swap(int x1, int y1, int x2, int y2) {
 	Particle* temp = particleCollect[x1][y1];
 	particleCollect[x1][y1] = particleCollect[x2][y2];
 	particleCollect[x2][y2] = temp;
 }
 
-
-void Simulation::updateMove(){
+//first function, who loop each frame to check at each cell to update it, and Move it, place all Move proposition in queu.
+void Simulation::UpdateMove(){
 	for (int i = 0; i < nbCols; i++){
 		for (int j = 0; j < nbRows; j++){
 			if (particleCollect[i][j]->type == sand) { Sand(i, j); }
@@ -61,32 +66,32 @@ void Simulation::updateMove(){
 	}
 }
 
-void Simulation::move(){
-	for (int i = 0; i < moves.size(); i++){
-		CheckAndMove(moves[i][0], moves[i][1], moves[i][2], moves[i][3], moves[i][4], moves[i][5], moves[i][6]);
+//second function, who loop each frame to apply each Move proposition in queu.
+void Simulation::Move(){
+	vector<int> indexArr = RArray(Moves.size());
+	for (int i = 0; i < Moves.size(); i++) {
+		int a = indexArr[i]; //to get random order Move application to avoid pattern
+		CheckAndMove(Moves[a][0], Moves[a][1], Moves[a][2], Moves[a][3], Moves[a][4], Moves[a][5], Moves[a][6]);
 	}
-	moves = {};
-	/*while (moves.size() > 0) {
-		int i = getRand(0, moves.size());
-		CheckAndMove(moves[i]);
-		moves.erase(moves.begin() + i);
-	}*/
+	Moves = {};
 }
 
-void Simulation::CheckAndMove(int Tmove, int T1, int T2, int X1, int Y1, int X2, int Y2) {
-	if (Tmove == _swap){
+//For each Move proposition, check for no probleme, no duplication, and if each cell are ok, then Move it
+void Simulation::CheckAndMove(int TMove, int T1, int T2, int X1, int Y1, int X2, int Y2) {
+	if (TMove == _Swap){
 		if (particleCollect[X1][Y1]->type == T1 && particleCollect[X2][Y2]->type == T2){
-			swap(X1, Y1, X2, Y2);
+			Swap(X1, Y1, X2, Y2);
 		}
 	}
-	else if (Tmove == _replace) {
+	else if (TMove == _Replace) {
 		if (particleCollect[X1][Y1]->type == T2 || T2 == -1) {
-			replace(T1, X1, Y1);
+			Replace(T1, X1, Y1);
 		}
 	}
 }
 
-void Simulation::render(sf::RenderWindow& window )
+//To Render all cell in windows using SFML
+void Simulation::Render(sf::RenderWindow& window )
 {
 	texture.create(window.getSize().x, window.getSize().y);
 	image.create(window.getSize().x, window.getSize().y, Color::Black);
@@ -111,13 +116,14 @@ void Simulation::render(sf::RenderWindow& window )
 	window.draw(sprite);
 }
 
-String Simulation::inputHandler(sf::Event event, sf::RenderWindow& window) {
+//Get all input from mouse and keyboard, and place cell, change type cell.
+String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 	if (event.type == Event::MouseButtonPressed) {
 		if (event.mouseButton.button == Mouse::Left) {
 			Mouse mouse;
 			int x = mouse.getPosition(window).x / (window.getSize().x / particleCollect.size()) ;
 			int y = mouse.getPosition(window).y / (window.getSize().y / particleCollect.size()) ;
-			//replace(sand, x, y);
+			//Replace(sand, x, y);
 			HandPlace(x, y, sand);
 		}
 	}
@@ -134,20 +140,23 @@ String Simulation::inputHandler(sf::Event event, sf::RenderWindow& window) {
 	return "0";
 }
 
+//check if coordonate are in gride array to avoid bounds exception and crash.
 bool Simulation::V(int x, int y) {
 	return x >= 0 && x < Simulation::nbCols && y >= 0 && y < Simulation::nbRows;
 }
 
-void Simulation::AddMove(int Tmove, int T1,int T2,int X1, int Y1, int X2 = -1, int Y2 = -1) {
-	if (Tmove == _swap) { //swap two cells
-		moves.push_back({ Tmove, T1, T2, X1, Y1, X2, Y2 });
+//each cell add a Move to queu to execute them later
+void Simulation::AddMove(int TMove, int T1,int T2,int X1, int Y1, int X2 = -1, int Y2 = -1) {
+	if (TMove == _Swap) { //Swap two cells
+		Moves.push_back({ TMove, T1, T2, X1, Y1, X2, Y2 });
 	}
-	else if (Tmove == _replace) { //replace one cell, change the type or contente of cell
-		moves.push_back({ Tmove, T1, T2, X1, Y1, X2, Y2 });
+	else if (TMove == _Replace) { //Replace one cell, change the type or contente of cell
+		Moves.push_back({ TMove, T1, T2, X1, Y1, X2, Y2 });
  	}
 }
 
-bool Simulation::CheckMove(int x , int y, int t) {
+//return type cell at specifique coordinate
+bool Simulation::ValidType(int x , int y, int t) {
 	if (V(x, y)) {
 		return particleCollect[x][y]->type == t;
 	}
@@ -155,44 +164,62 @@ bool Simulation::CheckMove(int x , int y, int t) {
 }
 
 void Simulation::Sand (int x, int y){
-	bool b = Simulation::CheckMove(x, y + 1, air);
-	bool bWater = Simulation::CheckMove(x, y + 1, water);
+	bool b = Simulation::ValidType(x, y + 1, air);
+	bool bWater = Simulation::ValidType(x, y + 1, water);
 
-	bool bl = Simulation::CheckMove(x - 1, y + 1, air);
-	bool br = Simulation::CheckMove(x + 1, y + 1, air);
+	bool bl = Simulation::ValidType(x - 1, y + 1, air);
+	bool br = Simulation::ValidType(x + 1, y + 1, air);
 
 	if (b) {
 		//Simulation::AddMove(x, y, x, y + 1, sand, air, air);
-		Simulation::AddMove(_swap, sand, air, x, y, x, y + 1);
+		Simulation::AddMove(_Swap, sand, air, x, y, x, y + 1);
 	}
 	/*else if (bWater) {
 		Simulation::AddMove(x, y, x, y + 1, sand, water, water);
 	}*/
 	else if (bl && br) {
-		if (true) {
-			Simulation::AddMove(_swap, sand, air, x, y, x - 1, y + 1);
+		if (GetRand(0, 100) > 50) {
+			Simulation::AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
 		}
 		else {
-			Simulation::AddMove(_swap, sand, air, x, y, x + 1, y + 1);
+			Simulation::AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
 		}
 	}
 	else if (bl) {
-		Simulation::AddMove(_swap, sand, air, x, y, x - 1, y + 1);
+		Simulation::AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
 	}
 	else if (br) {
-		Simulation::AddMove(_swap, sand, air, x, y, x + 1, y + 1);
+		Simulation::AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
 	}
 }
 
+//call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
 	const int nbplace = 15;
 	const int dist = 4;
 	for (int i = 0; i < nbplace; i++)
 	{
-		int nX = x + getRand(-dist, dist);
-		int nY = y + getRand(-dist, dist);
+		int nX = x + GetRand(-dist, dist);
+		int nY = y + GetRand(-dist, dist);
 		if (V(nX, nY)) {
-			AddMove(_replace, type, -1, nX, nY);
+			AddMove(_Replace, type, -1, nX, nY);
 		}
 	}
+}
+
+//generate an array of int in random order to avoid pattern on Move application to get more organique simulation
+vector<int> Simulation::RArray(const int& max) {
+	vector<int> a;
+	for (int i = 0; i < max; i++){
+		a.push_back(i);
+	}
+	for (int i = 0; i < max; i++)
+	{
+		int b = GetRand(0, max-1);
+		int c = GetRand(0, max-1);
+		int d = a[b];
+		a[b] = a[c];
+		a[c] = d;
+	}
+	return a;
 }

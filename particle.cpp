@@ -24,18 +24,19 @@ Particle::Particle(int Itype, vector<int> Ipos) {
 	position = Ipos;
 
 	//cout << this << endl;
-	srand((unsigned)this);
-	//cout << getRand(5,10);
+	srand((unsigned)this* 41421356237);
+	//cout << GetRand(5,10);
 
 	if (type == air) {
 		color = Color(50, 50, 50);
 	}
 	else if (type == sand) {
-		color = HSLtoRGB(((double)getRand(62, 70)/100), 0.2, 0.85, 1.);
+		color = HSLtoRGB(((double)GetRand(62, 70) / 100),(double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
 	}
 }
 
-int Particle::getRand(int a, int b) {
+int Particle::GetRand(int a, int b) {
+    if (b - a == 0) { return a; }
 	return (rand() % (b - a)) + a;
 }
 
