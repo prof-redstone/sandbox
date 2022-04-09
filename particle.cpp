@@ -4,24 +4,18 @@
 #include <cmath>
 #include "main.h"
 #include "particle.h"
+#include "simulation.h"
 
 using namespace std;
 using namespace sf;
 
+enum type { air, sand, water, stone, acide };
+enum MoveType { _Swap, _Replace };
 
-
-enum type {
-	air,
-	sand,
-	water,
-	stone,
-	acide
-};
-
-
-Particle::Particle(int Itype, vector<int> Ipos) {
+Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	type = Itype;
 	position = Ipos;
+    simulation = sim;
 
 	//cout << this << endl;
 	srand((unsigned)this* 41421356237);
@@ -35,11 +29,44 @@ Particle::Particle(int Itype, vector<int> Ipos) {
 	}
 }
 
+
+void Particle::Sand(int x, int y) {
+	bool b = simulation->ValidType(x, y + 1, air);
+	bool bWater = simulation->ValidType(x, y + 1, water);
+
+	bool bl = simulation->ValidType(x - 1, y + 1, air);
+	bool br = simulation->ValidType(x + 1, y + 1, air);
+
+	if (b) {
+		//Simulation::AddMove(x, y, x, y + 1, sand, air, air);
+		simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+	}
+	/*else if (bWater) {
+		Simulation::AddMove(x, y, x, y + 1, sand, water, water);
+	}*/
+	else if (bl && br) {
+		if (GetRand(0, 100) > 50) {
+			simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+		}
+		else {
+			simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+		}
+	}
+	else if (bl) {
+		simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+	}
+	else if (br) {
+		simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+	}
+}
+
+//to get a random Interger
 int Particle::GetRand(int a, int b) {
     if (b - a == 0) { return a; }
 	return (rand() % (b - a)) + a;
 }
 
+//to converte HSL color mode to RGBA
 sf::Color Particle::HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI)
 {
     //hue : 0 : red  1 : yellow  2 : green  3 : cyan  4 : blue  5 : purple  6 : red
