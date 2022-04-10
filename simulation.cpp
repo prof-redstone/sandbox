@@ -15,31 +15,39 @@ enum MoveType { _Swap, _Replace };
 
 //initialisation of gride and other parameter
 Simulation::Simulation() {
-	srand((unsigned)time(0));
+	//for SFML render window
 	image.create(50, 50, Color::Cyan);
 	texture.create(50, 50);
 	texture.update(image);
+	//to init the random function
+	srand((unsigned)this * 41421356237); // for init seed random
 
-	srand((unsigned)this); // for init seed random
+	//For inputHandler
+	mousePresse = false;
+	mouseType = sand;
 
-	nbCols = 100;
-	nbRows = 100;
-
+	nbCols = 150;
+	nbRows = 150;
 	particleCollect = vector<vector<Particle*>>(nbCols, vector<Particle*>(nbRows, nullptr));
-
+	 
 	for (int i = 0; i < nbCols; i++){
 		for (int j = 0; j < nbRows; j++){
 			particleCollect[i][j] = new Particle(0, { i,j }, this);
 		}
 	}
 
-	Replace(sand, 10, 10);
-
-	RArray(10);
 }
 
 //first function, who loop each frame to check at each cell to update it, and Move it, place all Move proposition in queu.
-void Simulation::UpdateMove() {
+void Simulation::UpdateMove(sf::RenderWindow& window) {
+	if (mousePresse) {
+		Mouse mouse;
+		int x = mouse.getPosition(window).x / (window.getSize().x / particleCollect.size());
+		int y = mouse.getPosition(window).y / (window.getSize().y / particleCollect.size());
+		HandPlace(x, y, mouseType);
+	}
+
+
 	for (int i = 0; i < nbCols; i++) {
 		for (int j = 0; j < nbRows; j++) {
 			if (particleCollect[i][j]->type == sand) { 
@@ -56,6 +64,7 @@ void Simulation::Move() {
 		int a = indexArr[i]; //to get random order Move application to avoid pattern
 		CheckAndMove(Moves[a][0], Moves[a][1], Moves[a][2], Moves[a][3], Moves[a][4], Moves[a][5], Moves[a][6]);
 	}
+	//reset list
 	Moves = {};
 }
 
@@ -126,11 +135,14 @@ void Simulation::Swap(int x1, int y1, int x2, int y2) {
 String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 	if (event.type == Event::MouseButtonPressed) {
 		if (event.mouseButton.button == Mouse::Left) {
-			Mouse mouse;
-			int x = mouse.getPosition(window).x / (window.getSize().x / particleCollect.size()) ;
-			int y = mouse.getPosition(window).y / (window.getSize().y / particleCollect.size()) ;
-			//Replace(sand, x, y);
-			HandPlace(x, y, sand);
+			mousePresse = true;
+			cout << "pressed" << endl;
+		}
+	}
+	if (event.type == Event::MouseButtonReleased) {
+		if (event.mouseButton.button == Mouse::Left) {
+			mousePresse = false;
+			cout << "relaesed" << endl;
 		}
 	}
 	if (event.type == Event::KeyPressed) {
@@ -142,20 +154,41 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			return "FPS DOWN";
 		}
+		if (event.key.code == Keyboard::T)//decrease limit
+		{
+			mouseType = stone;
+		}
+		if (event.key.code == Keyboard::S)//decrease limit
+		{
+			mouseType = sand;
+		}
 	}
 	return "0";
 }
 
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
-	const int nbplace = 15;
-	const int dist = 4;
-	for (int i = 0; i < nbplace; i++)
-	{
-		int nX = x + GetRand(-dist, dist);
-		int nY = y + GetRand(-dist, dist);
-		if (V(nX, nY)) {
-			AddMove(_Replace, type, -1, nX, nY);
+	if (type == sand) { //all semi solid particle
+		const int nbplace = 1;
+		const int dist = 5;
+		for (int i = 0; i < nbplace; i++)
+		{
+			int nX = x + GetRand(-dist, dist);
+			int nY = y + GetRand(-dist, dist);
+			if (V(nX, nY)) {
+				AddMove(_Replace, type, -1, nX, nY);
+			}
+		}
+	}
+	if (type == stone) {
+		const int stroke = 2;
+		for (int i = 0; i < stroke; i++)
+		{
+			for (int j = 0; j < stroke; j++) {
+				if (V(x + i, y + j)) {
+					AddMove(_Replace, type, -1, x+i, y+j);
+				}
+			}
 		}
 	}
 }
@@ -170,36 +203,6 @@ bool Simulation::ValidType(int x , int y, int t) {
 		return particleCollect[x][y]->type == t;
 	}
 	return false;
-}
-
-void Simulation::Sand (int x, int y){
-	bool b = Simulation::ValidType(x, y + 1, air);
-	bool bWater = Simulation::ValidType(x, y + 1, water);
-
-	bool bl = Simulation::ValidType(x - 1, y + 1, air);
-	bool br = Simulation::ValidType(x + 1, y + 1, air);
-
-	if (b) {
-		//Simulation::AddMove(x, y, x, y + 1, sand, air, air);
-		Simulation::AddMove(_Swap, sand, air, x, y, x, y + 1);
-	}
-	/*else if (bWater) {
-		Simulation::AddMove(x, y, x, y + 1, sand, water, water);
-	}*/
-	else if (bl && br) {
-		if (GetRand(0, 100) > 50) {
-			Simulation::AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
-		}
-		else {
-			Simulation::AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
-		}
-	}
-	else if (bl) {
-		Simulation::AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
-	}
-	else if (br) {
-		Simulation::AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
-	}
 }
 
 //generate an array of int in random order to avoid pattern on Move application to get more organique simulation

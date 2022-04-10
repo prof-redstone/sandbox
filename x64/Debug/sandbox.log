@@ -1,9 +1,17 @@
-﻿  simulation.cpp
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,22): warning C4311: 'cast de type' : troncation de pointeur de 'Simulation *' à 'unsigned int'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,22): warning C4302: 'cast de type' : troncation de 'Simulation *' à 'unsigned int'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(54,44): warning C4267: 'argument' : conversion de 'size_t' en 'const int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(67,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(68,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(130,88): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(131,88): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+﻿  main.cpp
+  particle.cpp
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,22): warning C4311: 'cast de type' : troncation de pointeur de 'Particle *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,22): warning C4302: 'cast de type' : troncation de 'Particle *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,93): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(29,17): warning C4305: '=' : troncation de 'double' à 'float'
+  simulation.cpp
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4311: 'cast de type' : troncation de pointeur de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4302: 'cast de type' : troncation de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(45,86): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(46,86): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(62,44): warning C4267: 'argument' : conversion de 'size_t' en 'const int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(76,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(77,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
+  Génération de code en cours...
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Debug\sandbox.exe

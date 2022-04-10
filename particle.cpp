@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <stdlib.h>     /* abs */
 #include "main.h"
 #include "particle.h"
 #include "simulation.h"
@@ -17,34 +18,194 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	position = Ipos;
     simulation = sim;
 
-	//cout << this << endl;
-	srand((unsigned)this* 41421356237);
-	//cout << GetRand(5,10);
+	// to init the random
+	srand((unsigned)this* 41421356237 + (unsigned)type * 18748 + (unsigned)position[0]*1754241 + (unsigned)position[1] * 2864856);
 
 	if (type == air) {
+		friction = 0;
 		color = Color(50, 50, 50);
 	}
 	else if (type == sand) {
+		friction = 1.1;
+		isFalingTime = 0;
+		moving = false;
+		lastposition = position;
+		Xvel = 0;
+		Yvel = 0;
 		color = HSLtoRGB(((double)GetRand(62, 70) / 100),(double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
 	}
 }
 
 
 void Particle::Sand(int x, int y) {
-	bool b = simulation->ValidType(x, y + 1, air);
+	bool b = simulation->ValidType(x, y + 1, air); 
 	bool bWater = simulation->ValidType(x, y + 1, water);
-
 	bool bl = simulation->ValidType(x - 1, y + 1, air);
 	bool br = simulation->ValidType(x + 1, y + 1, air);
+	bool l = simulation->ValidType(x - 1, y, air);
+	bool r = simulation->ValidType(x + 1, y, air);
 
-	if (b) {
-		//Simulation::AddMove(x, y, x, y + 1, sand, air, air);
-		simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+	if (position[0] != x || position[1] != y) {//mettre à jour la position et l'ancienne si elle a change
+		lastposition = { position[0], position[1] };
+		position = { x,y };
+
+		moving = true;
 	}
+
+
+	if (moving) { //si a bouge juste avant ou voisin lui permet de bouger
+
+		if (b || bl || br) {
+			isFalingTime++;
+			moving = true;
+			if (b) {
+				simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+			}
+			else if(friction < 1.){
+				if (bl && br) {
+					if (GetRand(0, 100) > 50) {
+						simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+					}
+					else {
+						simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+					}
+				}
+				else if (bl) {
+					simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+				}
+				else if (br) {
+					simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+				}
+
+			}else {
+				if ((GetRand(0, 1001) / 1000.) > (friction - 1.)) {
+					if (bl && br) {
+						if (GetRand(0, 100) > 50) {
+							simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+						}
+						else {
+							simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+						}
+					}
+					else if (bl) {
+						simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+					}
+					else if (br) {
+						simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+					}
+				}
+				else {
+					moving = false;
+				}
+			}
+			//transmettre moving au voisin
+			return;
+		}
+
+		//si Inertie horizontal et peut aller gauche ou droite
+		if ((l || r)) {
+			//Si inertie V convertire en inertie H
+			Yvel = ((isFalingTime / 10) > 2) ? 4 : isFalingTime / 10;
+			isFalingTime = 0;
+			//convertion de l'energie vertical en horizontal
+			if (Yvel != 0) {
+				if (l && r) {
+					Xvel = (GetRand(0, 2) * 2 - 1) * Yvel;
+				}
+				else if (l) {
+					Xvel = -1 * Yvel;
+				}
+				else if (r) {
+					Xvel = 1 * Yvel;
+				}
+				Yvel = 0;
+			}
+		}
+
+	}else if (b) { //si toujours à la meme postion regarde en dessous
+		simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+		return;
+	}
+
+	//si la particle a de l'enertie horizontal et qu'elle n'a pu bouger 
+	if (Xvel != 0) {
+		Xvel = ((GetRand(0, 1001) / 1000.) < friction) ? Xvel / 2 : Xvel;
+		if (l || r) {
+			if (Xvel > 0 && r) {
+				simulation->AddMove(_Swap, sand, air, x, y, x + 1, y);
+				return;
+			}
+			if (Xvel < 0 && l) {
+				simulation->AddMove(_Swap, sand, air, x, y, x - 1, y);
+				return;
+			}
+		}else {
+			Xvel = 0;
+		}
+	}
+
+	//-----------------------fin----------------------------
+	return; 
+
+
+	if (b) {//peut tomber vers le bas
+		isFalingTime++;
+		Yvel = ((isFalingTime / 10) > 2) ? 4 : isFalingTime / 10;
+		moving = true;
+		simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+		return;
+		//mettre le freeFaling au voisin
+	}
+	else { //peut pas tomber vers le bas
+
+		//si inertie horizontal on ajoute la friction
+		if (Xvel != 0) { 
+			Xvel = ((GetRand(0,1001)/1000.) < friction) ? Xvel/2 : Xvel;
+		}
+		isFalingTime = 0;
+		//convertion de l'energie vertical en horizontal
+		if (Yvel != 0) { 
+			if (l && r) {
+				Xvel = (GetRand(0, 2) * 2 - 1) * Yvel;
+			}
+			else if (l) {
+				Xvel = -1 * Yvel;
+			}
+			else if (r) {
+				Xvel = 1 * Yvel;
+			}
+			Yvel = 0;
+		}
+
+	}
+
+	if (Xvel != 0) {//si inertie horizontal on bouge
+		if (Xvel > 0 && r) {
+			simulation->AddMove(_Swap, sand, air, x, y, x + 1, y);
+			return;
+		}
+		if (Xvel < 0 && l) {
+			simulation->AddMove(_Swap, sand, air, x, y, x - 1, y);
+			return;
+		}
+	}
+
+
+	if (moving) { //si free falling on check des case en plus 
+		if (r) {
+			simulation->AddMove(_Swap, sand, air, x, y, x + 1, y);
+			return;
+		}
+		if (l) {
+			simulation->AddMove(_Swap, sand, air, x, y, x - 1, y);
+			return;
+		}
+	}
+
+
 	/*else if (bWater) {
 		Simulation::AddMove(x, y, x, y + 1, sand, water, water);
-	}*/
-	else if (bl && br) {
+	}else if (bl && br) {
 		if (GetRand(0, 100) > 50) {
 			simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
 		}
@@ -57,7 +218,7 @@ void Particle::Sand(int x, int y) {
 	}
 	else if (br) {
 		simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
-	}
+	}*/
 }
 
 //to get a random Interger

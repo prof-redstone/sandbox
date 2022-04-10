@@ -12,11 +12,15 @@ class Simulation;
 class Particle {
 public:
 	int type;
-	vector<int> position;
-	Color color;
-	int falling; //0:cant fall, 1:can fall, 2:falling
-	int weight;
 	Simulation* simulation;
+	vector<int> position;
+	vector<int> lastposition;
+	Color color;
+	float friction;
+	int isFalingTime;
+	bool moving;
+	int Yvel;
+	int Xvel;
 
 	//a ajouter : couleur, inertie, 
 

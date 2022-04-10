@@ -42,7 +42,7 @@ int main()
         window.clear(Color::Black);
 
         for (int i = 0; i < iterationPerFrame; i++){
-            simulation.UpdateMove();
+            simulation.UpdateMove(window);
             simulation.Move();
         }
         simulation.Render(window);
