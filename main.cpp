@@ -19,7 +19,7 @@ int main()
     int width = 600;
     int height = 600;
 
-    int iterationPerFrame = 1;
+    int iterationPerFrame = 5;
 
     sf::RenderWindow window(sf::VideoMode(width, height), "sandbox simulation");
     window.setFramerateLimit(60);

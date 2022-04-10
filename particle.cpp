@@ -26,8 +26,8 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		color = Color(50, 50, 50);
 	}
 	else if (type == sand) {
-		friction = 0.1;
-		inertieTransfer = 0.2; //entre 0.5 et 0.01
+		friction = 1.0;
+		inertieTransfer = 0.5; //entre 0.5 et 0.03
 		isFalingTime = 0; //compteur pour savoir pendant combient de temps elle tombe
 		moving = false; //false si elle n'a pas bouge entre 2 simulation
 		lastposition = position;
@@ -161,7 +161,7 @@ void Particle::TransferInertia(int x, int y) {
 void Particle::RecivedInertia() {
 	if ((GetRand(0, 1001) / 1000.) < inertieTransfer) {
 		//Xvel = 5;
-		Xvel = (GetRand(0, 2) * 2 - 1) * 2;
+		Xvel = (GetRand(0, 1001) / 1000. > 0.5) ? 4 : -4;
 	}
 }
 

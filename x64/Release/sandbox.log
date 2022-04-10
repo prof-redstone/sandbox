@@ -2,8 +2,6 @@
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,22): warning C4311: 'cast de type' : troncation de pointeur de 'Particle *' à 'unsigned int'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,22): warning C4302: 'cast de type' : troncation de 'Particle *' à 'unsigned int'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,93): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(29,17): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(30,24): warning C4305: '=' : troncation de 'double' à 'float'
   Génération de code en cours
   1 of 325 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
