@@ -162,13 +162,17 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			mouseType = sand;
 		}
+		if (event.key.code == Keyboard::A)//decrease limit
+		{
+			mouseType = air;
+		}
 	}
 	return "0";
 }
 
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
-	if (type == sand) { //all semi solid particle
+	if (type == sand || type == water) { //all semi solid particle
 		const int nbplace = 1;
 		const int dist = 5;
 		for (int i = 0; i < nbplace; i++)
@@ -180,7 +184,7 @@ void Simulation::HandPlace(int x, int y, int type) {
 			}
 		}
 	}
-	if (type == stone) {
+	if (type == stone || type == air) {
 		const int stroke = 2;
 		for (int i = 0; i < stroke; i++)
 		{

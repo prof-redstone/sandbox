@@ -17,6 +17,7 @@ public:
 	vector<int> lastposition;
 	Color color;
 	float friction;
+	float inertieTransfer;
 	int isFalingTime;
 	bool moving;
 	int Yvel;
@@ -26,6 +27,8 @@ public:
 
 	Particle(int Itype, vector<int> Ipos, Simulation* sim);
 	void Sand(int x, int y);
+	void TransferInertia(int x, int y);
+	void RecivedInertia();
 	int GetRand(int a, int b);
 	sf::Color HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI);
 
