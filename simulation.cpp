@@ -180,8 +180,8 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
 	if (type == sand || type == water) { //all semi solid particle
-		const int nbplace = 5;
-		const int dist = 5;
+		const int nbplace = 15;
+		const int dist = 10;
 		for (int i = 0; i < nbplace; i++)
 		{
 			int nX = x + GetRand(-dist, dist);

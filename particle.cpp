@@ -26,7 +26,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		color = Color(50, 50, 50);
 	}
 	else if (type == sand) {
-		friction = 1.0;
+		friction = 0.2;
 		inertieTransfer = 0.5; //entre 0.5 et 0.03
 		isFalingTime = 0; //compteur pour savoir pendant combient de temps elle tombe
 		moving = false; //false si elle n'a pas bouge entre 2 simulation
@@ -45,7 +45,6 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 
 void Particle::Sand(int x, int y) {
 	bool b = simulation->ValidType(x, y + 1, air); 
-	bool bWater = simulation->ValidType(x, y + 1, water);
 	bool bl = simulation->ValidType(x - 1, y + 1, air);
 	bool br = simulation->ValidType(x + 1, y + 1, air);
 	bool l = simulation->ValidType(x - 1, y, air);
@@ -160,6 +159,7 @@ void Particle::Water(int x, int y) {
 			return;
 		}
 		//calcule de la pression de chaque cote
+		pressure = 0;
 		for (int i = 0; i < lengthPressure; i++)
 		{
 			if (simulation->ValidType(x + i, y, air)) {
