@@ -35,6 +35,12 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		Yvel = 0;
 		color = HSLtoRGB(((double)GetRand(62, 70) / 100),(double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
 	}
+	else if (type == water) {
+		pressure = 0;
+		Xvel = 0;
+		Yvel = 0;
+		color = HSLtoRGB(((double)GetRand(375, 385) / 100), 0.5, 0.5, 1.);
+	}
 }
 
 void Particle::Sand(int x, int y) {
@@ -141,6 +147,40 @@ void Particle::Sand(int x, int y) {
 	return; 
 }
 
+void Particle::Water(int x, int y) {
+	bool b = simulation->ValidType(x, y + 1, air);
+	bool l = simulation->ValidType(x - 1, y, air);
+	bool r = simulation->ValidType(x + 1, y, air);
+	const int lengthPressure = 4;
+
+
+	if (b || l || r) {
+		if (b) {
+			simulation->AddMove(_Swap, water, air, x, y, x, y+1);
+			return;
+		}
+		//calcule de la pression de chaque cote
+		for (int i = 0; i < lengthPressure; i++)
+		{
+			if (simulation->ValidType(x + i, y, air)) {
+				pressure++;
+			}
+			if (simulation->ValidType(x - i, y, air)) {
+				pressure--;
+			}
+		}
+		//et on bouge a droite ou a gauche en fonction du sens de la pression
+
+		if (pressure > 0 && r) {
+			simulation->AddMove(_Swap, water, air, x, y, x + 1, y);
+		}
+		else if (pressure < 0 && l) {
+			simulation->AddMove(_Swap, water, air, x, y, x - 1, y);
+		}
+
+		return;
+	}
+}
 
 void Particle::TransferInertia(int x, int y) {
 	if (simulation->V(x + 1, y)) {

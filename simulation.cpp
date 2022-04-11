@@ -53,6 +53,9 @@ void Simulation::UpdateMove(sf::RenderWindow& window) {
 			if (particleCollect[i][j]->type == sand) { 
 				particleCollect[i][j]->Sand(i, j);
 			}
+			if (particleCollect[i][j]->type == water) {
+				particleCollect[i][j]->Water(i, j);
+			}
 		}
 	}
 }
@@ -166,6 +169,10 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			mouseType = air;
 		}
+		if (event.key.code == Keyboard::W)//decrease limit
+		{
+			mouseType = water;
+		}
 	}
 	return "0";
 }
@@ -173,7 +180,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
 	if (type == sand || type == water) { //all semi solid particle
-		const int nbplace = 1;
+		const int nbplace = 5;
 		const int dist = 5;
 		for (int i = 0; i < nbplace; i++)
 		{

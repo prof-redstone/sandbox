@@ -16,17 +16,25 @@ public:
 	vector<int> position;
 	vector<int> lastposition;
 	Color color;
+
+	//for multi type :
+	int Yvel;
+	int Xvel;
+
+	//for movable solid like sand :
 	float friction;
 	float inertieTransfer;
 	int isFalingTime;
 	bool moving;
-	int Yvel;
-	int Xvel;
 
-	//a ajouter : couleur, inertie, 
+	//for liquide:
+	int pressure;
+	
+
 
 	Particle(int Itype, vector<int> Ipos, Simulation* sim);
 	void Sand(int x, int y);
+	void Water(int x, int y);
 	void TransferInertia(int x, int y);
 	void RecivedInertia();
 	int GetRand(int a, int b);
