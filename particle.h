@@ -7,6 +7,8 @@
 using namespace std;
 using namespace sf;
 
+
+
 class Simulation;
 
 class Particle {
@@ -16,6 +18,8 @@ public:
 	vector<int> position;
 	vector<int> lastposition;
 	Color color;
+
+	int T(int x, int y);
 
 	//for multi type :
 	int Yvel;
@@ -33,6 +37,7 @@ public:
 
 
 	Particle(int Itype, vector<int> Ipos, Simulation* sim);
+	bool CanMove(int x, int y, int type);
 	void Sand(int x, int y);
 	void Water(int x, int y);
 	void TransferInertia(int x, int y);

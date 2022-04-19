@@ -139,13 +139,11 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 	if (event.type == Event::MouseButtonPressed) {
 		if (event.mouseButton.button == Mouse::Left) {
 			mousePresse = true;
-			cout << "pressed" << endl;
 		}
 	}
 	if (event.type == Event::MouseButtonReleased) {
 		if (event.mouseButton.button == Mouse::Left) {
 			mousePresse = false;
-			cout << "relaesed" << endl;
 		}
 	}
 	if (event.type == Event::KeyPressed) {

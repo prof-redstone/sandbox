@@ -21,6 +21,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	// to init the random
 	srand((unsigned)this* 41421356237 + (unsigned)type * 18748 + (unsigned)position[0]*1754241 + (unsigned)position[1] * 2864856);
 
+
 	if (type == air) {
 		friction = 0;
 		color = Color(50, 50, 50);
@@ -43,12 +44,31 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	}
 }
 
+bool Particle::CanMove(int x, int y, int type) {
+	if (simulation->V(x, y)) {
+		if (type == sand) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			if (cellT == air) { return true; }
+			if (cellT == water) { return true; }
+			if (cellT == acide) { return true; }
+				
+			return false;
+		}
+	}
+	return false;
+}
+
+int Particle::T(int x, int y) {
+	//faire attention il ne reregarde pas si la position est valide; erreur outOfBounds possible.
+	return simulation->particleCollect[x][y]->type;
+}
+
 void Particle::Sand(int x, int y) {
-	bool b = simulation->ValidType(x, y + 1, air); 
-	bool bl = simulation->ValidType(x - 1, y + 1, air);
-	bool br = simulation->ValidType(x + 1, y + 1, air);
-	bool l = simulation->ValidType(x - 1, y, air);
-	bool r = simulation->ValidType(x + 1, y, air);
+	bool b = CanMove(x, y + 1, sand);
+	bool bl = CanMove(x - 1, y + 1, sand);
+	bool br = CanMove(x + 1, y + 1, sand);
+	bool l = CanMove(x - 1, y, sand);
+	bool r = CanMove(x + 1, y, sand);
 
 	if (position[0] != x || position[1] != y) {//mettre à jour la position et l'ancienne si elle a change
 		lastposition = { position[0], position[1] };
@@ -63,32 +83,32 @@ void Particle::Sand(int x, int y) {
 			Yvel = ((isFalingTime / 10) > 4) ? 4 : isFalingTime / 10; //plus elle tombe depuis longtemps plus elle a d'inertie
 			moving = true;
 			if (b) {
-				simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+				simulation->AddMove(_Swap, sand, T(x,y+1), x, y, x, y + 1);
 			}else if(friction < 1.){
 				if (bl && br) {
 					if (GetRand(0, 100) > 50) {
-						simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+						simulation->AddMove(_Swap, sand, T(x-1, y + 1), x, y, x - 1, y + 1);
 					}else {
-						simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+						simulation->AddMove(_Swap, sand, T(x+1, y + 1), x, y, x + 1, y + 1);
 					}
 				}else if (bl) {
-					simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+					simulation->AddMove(_Swap, sand, T(x-1, y + 1), x, y, x - 1, y + 1);
 				}else if (br) {
-					simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+					simulation->AddMove(_Swap, sand, T(x+1, y + 1), x, y, x + 1, y + 1);
 				}
 
 			}else {
 				if ((GetRand(0, 1001) / 1000.) > (friction - 1.)) {
 					if (bl && br) {
 						if (GetRand(0, 100) > 50) {
-							simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+							simulation->AddMove(_Swap, sand, T(x - 1, y + 1), x, y, x - 1, y + 1);
 						}else {
-							simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+							simulation->AddMove(_Swap, sand, T(x + 1, y + 1), x, y, x + 1, y + 1);
 						}
 					}else if (bl) {
-						simulation->AddMove(_Swap, sand, air, x, y, x - 1, y + 1);
+						simulation->AddMove(_Swap, sand, T(x - 1, y + 1), x, y, x - 1, y + 1);
 					}else if (br) {
-						simulation->AddMove(_Swap, sand, air, x, y, x + 1, y + 1);
+						simulation->AddMove(_Swap, sand, T(x + 1, y + 1), x, y, x + 1, y + 1);
 					}
 				}else {
 					moving = false;
@@ -121,7 +141,7 @@ void Particle::Sand(int x, int y) {
 		}
 
 	}else if (b) { //si n'a pas bouge depuis la dernière fois, regarde que en dessous en dessous
-		simulation->AddMove(_Swap, sand, air, x, y, x, y + 1);
+		simulation->AddMove(_Swap, sand, T(x, y + 1), x, y, x, y + 1);
 		TransferInertia(x, y);
 		return;
 	}
@@ -131,11 +151,11 @@ void Particle::Sand(int x, int y) {
 		if (l || r) {
 			TransferInertia(x, y);
 			if (Xvel > 0 && r) {
-				simulation->AddMove(_Swap, sand, air, x, y, x + 1, y);
+				simulation->AddMove(_Swap, sand, T(x + 1, y), x, y, x + 1, y);
 				return;
 			}
 			if (Xvel < 0 && l) {
-				simulation->AddMove(_Swap, sand, air, x, y, x - 1, y);
+				simulation->AddMove(_Swap, sand, T(x - 1, y), x, y, x - 1, y);
 				return;
 			}
 		}else {
