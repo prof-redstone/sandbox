@@ -48,6 +48,7 @@ bool Particle::CanMove(int x, int y, int type) {
 	if (simulation->V(x, y)) {
 		if (type == sand) {
 			int cellT = simulation->particleCollect[x][y]->type;
+			//le sable est plus dense et ou lourd que ces materiaux, il peut donc echanger sa place avec pour tomber.
 			if (cellT == air) { return true; }
 			if (cellT == water) { return true; }
 			if (cellT == acide) { return true; }
@@ -58,6 +59,7 @@ bool Particle::CanMove(int x, int y, int type) {
 	return false;
 }
 
+//renvoie la type de la cellules
 int Particle::T(int x, int y) {
 	//faire attention il ne reregarde pas si la position est valide; erreur outOfBounds possible.
 	return simulation->particleCollect[x][y]->type;
@@ -170,7 +172,7 @@ void Particle::Water(int x, int y) {
 	bool b = simulation->ValidType(x, y + 1, air);
 	bool l = simulation->ValidType(x - 1, y, air);
 	bool r = simulation->ValidType(x + 1, y, air);
-	const int lengthPressure = 4;
+	const int lengthPressure = 10;
 
 
 	if (b || l || r) {
@@ -180,13 +182,13 @@ void Particle::Water(int x, int y) {
 		}
 		//calcule de la pression de chaque cote
 		pressure = 0;
-		for (int i = 0; i < lengthPressure; i++)
+		for (int i = 0; (i < lengthPressure ); i++)
 		{
 			if (simulation->ValidType(x + i, y, air)) {
-				pressure++;
+				pressure += 1;
 			}
 			if (simulation->ValidType(x - i, y, air)) {
-				pressure--;
+				pressure -= 1;
 			}
 		}
 		//et on bouge a droite ou a gauche en fonction du sens de la pression

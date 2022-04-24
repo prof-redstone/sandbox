@@ -16,7 +16,10 @@ public:
 	sf::Sprite sprite;
 
 	bool mousePresse;
+	int mouseStillPresse;
 	int mouseType;
+	int mouseLastX = -1;
+	int mouseLastY = -1;
 
 	int nbRows;
 	int nbCols;
@@ -37,7 +40,7 @@ public:
 	void Swap(int x1, int y1, int x2, int y2);
 	bool V(int x, int y);
 	int GetRand(int a, int b);
-
+	void PlaceBTW(int matrixX1, int matrixY1, int matrixX2, int matrixY2, int type, int stroke);
 
 
 };

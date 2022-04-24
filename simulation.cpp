@@ -24,7 +24,10 @@ Simulation::Simulation() {
 
 	//For inputHandler
 	mousePresse = false;
+	mouseStillPresse = 0;
 	mouseType = sand;
+
+	cout << mouseLastX;
 
 	nbCols = 150;
 	nbRows = 150;
@@ -41,10 +44,19 @@ Simulation::Simulation() {
 //first function, who loop each frame to check at each cell to update it, and Move it, place all Move proposition in queu.
 void Simulation::UpdateMove(sf::RenderWindow& window) {
 	if (mousePresse) {
+		if (mouseStillPresse == -1) { mouseStillPresse = 1; } //pour attendre 2 tours avant de l'activer, pour etre sur que lastX et Y soit bien du meme type
+		if (mouseStillPresse == 0) { mouseStillPresse = -1; }
+
 		Mouse mouse;
 		int x = mouse.getPosition(window).x / (window.getSize().x / particleCollect.size());
 		int y = mouse.getPosition(window).y / (window.getSize().y / particleCollect.size());
 		HandPlace(x, y, mouseType);
+
+		mouseLastX = x;
+		mouseLastY = y;
+	}
+	else {
+		mouseStillPresse = 0;
 	}
 
 
@@ -177,6 +189,8 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
+	const int stroke = 2;
+
 	if (type == sand || type == water) { //all semi solid particle
 		const int nbplace = 15;
 		const int dist = 10;
@@ -190,14 +204,8 @@ void Simulation::HandPlace(int x, int y, int type) {
 		}
 	}
 	if (type == stone || type == air) {
-		const int stroke = 2;
-		for (int i = 0; i < stroke; i++)
-		{
-			for (int j = 0; j < stroke; j++) {
-				if (V(x + i, y + j)) {
-					AddMove(_Replace, type, -1, x+i, y+j);
-				}
-			}
+		if (mouseStillPresse == 1) {
+			PlaceBTW(x, y, mouseLastX, mouseLastY, type, stroke);
 		}
 	}
 }
@@ -235,4 +243,57 @@ vector<int> Simulation::RArray(const int& max) {
 int Simulation::GetRand(int a, int b) {
 	if (b - a == 0) { return a; }
 	return (rand() % (b - a)) + a;
+}
+
+
+void Simulation::PlaceBTW(int matrixX1, int matrixY1, int matrixX2, int matrixY2, int type, int stroke) {
+	// If the two points are the same no need to iterate. Just run the provided function
+	if (matrixX1 == matrixX2 && matrixY1 == matrixY2) {
+		for (int i = 0; i < stroke; i++)
+		{
+			for (int j = 0; j < stroke; j++) {
+				if (V(matrixX1 + i, matrixY1 + j)) {
+					AddMove(_Replace, type, -1, matrixX1 + i, matrixY1 + j);
+				}
+			}
+		}
+		return;
+	}
+	//l'algo pour cette fonction n'est pas de moi, mais ça marche. lien :: https://gist.github.com/DavidMcLaughlin208/60e69e698e3858617c322d80a8f174e2
+	int xDiff = matrixX1 - matrixX2;
+	int yDiff = matrixY1 - matrixY2;
+	bool xDiffIsLarger = abs(xDiff) > abs(yDiff);
+
+	int xModifier = xDiff < 0 ? 1 : -1;
+	int yModifier = yDiff < 0 ? 1 : -1;
+
+	int longerSideLength = max(abs(xDiff), abs(yDiff));
+	int shorterSideLength = min(abs(xDiff), abs(yDiff));
+	float slope = (shorterSideLength == 0 || longerSideLength == 0) ? 0 : ((float)(shorterSideLength) / (longerSideLength));
+
+	int shorterSideIncrease;
+	for (int i = 1; i <= longerSideLength; i++) {
+		shorterSideIncrease = round(i * slope);
+		int yIncrease, xIncrease;
+		if (xDiffIsLarger) {
+			xIncrease = i;
+			yIncrease = shorterSideIncrease;
+		}
+		else {
+			yIncrease = i;
+			xIncrease = shorterSideIncrease;
+		}
+		int currentY = matrixY1 + (yIncrease * yModifier);
+		int currentX = matrixX1 + (xIncrease * xModifier);
+		if (V(currentX, currentY)) {
+			for (int i = 0; i < stroke; i++)
+			{
+				for (int j = 0; j < stroke; j++) {
+					if (V(currentX + i, currentY + j)) {
+						AddMove(_Replace, type, -1, currentX + i, currentY + j);
+					}
+				}
+			}
+		}
+	}
 }
