@@ -2,15 +2,11 @@
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4311: 'cast de type' : troncation de pointeur de 'Simulation *' à 'unsigned int'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4302: 'cast de type' : troncation de 'Simulation *' à 'unsigned int'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(23,23): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(51,86): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(52,86): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(77,44): warning C4267: 'argument' : conversion de 'size_t' en 'const int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(91,59): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(92,62): warning C4267: 'initialisation' : conversion de 'size_t' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(276,30): warning C4244: '=' : conversion de 'float' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(78,44): warning C4267: 'argument' : conversion de 'size_t' en 'const int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(289,30): warning C4244: '=' : conversion de 'float' en 'int', perte possible de données
   Génération de code en cours
-  3 of 322 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+  1 of 325 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+    2 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Release\sandbox.exe

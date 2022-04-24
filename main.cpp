@@ -10,14 +10,23 @@
 using namespace std;
 using namespace sf;
 
-Simulation simulation = Simulation();
 
+
+/*
+lien : 
+https://www.youtube.com/watch?v=5Ka3tbbT-9E
+https://www.youtube.com/watch?v=VLZjd_Y1gJ8
+
+*/
 
 
 int main()
 {
-    int width = 600;
+    int width = 1000;
     int height = 600;
+
+    Simulation simulation = Simulation(width, height);
+
 
     int iterationPerFrame = 3;
 

@@ -10,11 +10,11 @@
 using namespace sf;
 using namespace std;
 
-enum type {air,sand,water,stone,acide};
+enum type {air,sand,water,stone, wood, salt, saltWater, acide};
 enum MoveType { _Swap, _Replace };
 
 //initialisation of gride and other parameter
-Simulation::Simulation() {
+Simulation::Simulation(int nbC, int nbR) {
 	//for SFML render window
 	image.create(50, 50, Color::Cyan);
 	texture.create(50, 50);
@@ -27,10 +27,12 @@ Simulation::Simulation() {
 	mouseStillPresse = 0;
 	mouseType = sand;
 
-	cout << mouseLastX;
 
-	nbCols = 150;
-	nbRows = 150;
+	sizePixel = 4;
+	nbCols = nbC/sizePixel;
+	nbRows = nbR/sizePixel;
+	cout << nbRows;
+
 	particleCollect = vector<vector<Particle*>>(nbCols, vector<Particle*>(nbRows, nullptr));
 	 
 	for (int i = 0; i < nbCols; i++){
@@ -43,13 +45,17 @@ Simulation::Simulation() {
 
 //first function, who loop each frame to check at each cell to update it, and Move it, place all Move proposition in queu.
 void Simulation::UpdateMove(sf::RenderWindow& window) {
+	//test du feu
+	particleCollect[10][10]->fireConsumTimer = 1000;
+
+
 	if (mousePresse) {
 		if (mouseStillPresse == -1) { mouseStillPresse = 1; } //pour attendre 2 tours avant de l'activer, pour etre sur que lastX et Y soit bien du meme type
 		if (mouseStillPresse == 0) { mouseStillPresse = -1; }
 
 		Mouse mouse;
-		int x = mouse.getPosition(window).x / (window.getSize().x / particleCollect.size());
-		int y = mouse.getPosition(window).y / (window.getSize().y / particleCollect.size());
+		int x = mouse.getPosition(window).x / sizePixel;
+		int y = mouse.getPosition(window).y / sizePixel;
 		HandPlace(x, y, mouseType);
 
 		mouseLastX = x;
@@ -62,12 +68,7 @@ void Simulation::UpdateMove(sf::RenderWindow& window) {
 
 	for (int i = 0; i < nbCols; i++) {
 		for (int j = 0; j < nbRows; j++) {
-			if (particleCollect[i][j]->type == sand) { 
-				particleCollect[i][j]->Sand(i, j);
-			}
-			if (particleCollect[i][j]->type == water) {
-				particleCollect[i][j]->Water(i, j);
-			}
+			particleCollect[i][j]->UpdateMove(i, j);
 		}
 	}
 }
@@ -88,16 +89,20 @@ void Simulation::Render(sf::RenderWindow& window)
 {
 	texture.create(window.getSize().x, window.getSize().y);
 	image.create(window.getSize().x, window.getSize().y, Color::Black);
-	int sizePiX = window.getSize().x / particleCollect.size();
-	int sizePiY = window.getSize().y / particleCollect[0].size();
 
 
-	for (int i = 0; i < (particleCollect.size()); i++) {
-		for (int j = 0; j < (particleCollect[0].size()); j++) {
-			Color col = particleCollect[i][j]->color;
-			for (int k = 0; k < sizePiX; k++) {
-				for (int l = 0; l < sizePiY; l++) {
-					image.setPixel(i * sizePiX + k, j * sizePiY + l, col);
+	for (int i = 0; i < (nbCols); i++) {
+		for (int j = 0; j < (nbRows); j++) {
+			Color col;
+			if (particleCollect[i][j]->fireConsumTimer < 0) {
+				col = particleCollect[i][j]->color;
+			}
+			else {
+				col = HSLtoRGB((float)(particleCollect[i][j]->fireConsumTimer % 100) /100, 0.05, 0.95, 1.);
+			}
+			for (int k = 0; k < sizePixel; k++) {
+				for (int l = 0; l < sizePixel; l++) {
+					image.setPixel(i * sizePixel + k, j * sizePixel + l, col);
 				}
 			}
 		}
@@ -183,6 +188,14 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			mouseType = water;
 		}
+		if (event.key.code == Keyboard::O)//decrease limit
+		{
+			mouseType = wood;
+		}
+		if (event.key.code == Keyboard::L)//decrease limit
+		{
+			mouseType = salt;
+		}
 	}
 	return "0";
 }
@@ -191,7 +204,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 void Simulation::HandPlace(int x, int y, int type) {
 	const int stroke = 2;
 
-	if (type == sand || type == water) { //all semi solid particle
+	if (type == sand || type == water || type == salt) { //all semi solid particle
 		const int nbplace = 15;
 		const int dist = 10;
 		for (int i = 0; i < nbplace; i++)
@@ -203,7 +216,7 @@ void Simulation::HandPlace(int x, int y, int type) {
 			}
 		}
 	}
-	if (type == stone || type == air) {
+	if (type == stone || type == air || type == wood) {
 		if (mouseStillPresse == 1) {
 			PlaceBTW(x, y, mouseLastX, mouseLastY, type, stroke);
 		}
@@ -296,4 +309,47 @@ void Simulation::PlaceBTW(int matrixX1, int matrixY1, int matrixX2, int matrixY2
 			}
 		}
 	}
+}
+
+sf::Color Simulation::HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI)
+{
+	//hue : 0 : red  1 : yellow  2 : green  3 : cyan  4 : blue  5 : purple  6 : red
+	//hue  0 == 6   6 is one cycle rotation
+	//saturation [0;1]
+	//darkness [0;1]
+	//alpha [0;1]
+
+	double red = 0;
+	double green = 0;
+	double blue = 0;
+	double hue = fmod(hueI, 6);
+
+	if (hue >= 0 && hue < 1) {
+		red = 255; green = hue * 255; blue = 0;
+	}
+	else if (hue >= 1 && hue < 2) {
+		green = 255; red = 255 - ((hue - 1) * 255); blue = 0;
+	}
+	else if (hue >= 2 && hue < 3) {
+		green = 255; blue = (hue - 2) * 255; red = 0;
+	}
+	else if (hue >= 3 && hue < 4) {
+		blue = 255; green = 255 - ((hue - 3) * 255); red = 0;
+	}
+	else if (hue >= 4 && hue < 5) {
+		blue = 255; red = (hue - 4) * 255; green = 0;
+	}
+	else if (hue >= 5 && hue < 6) {
+		red = 255; blue = 255 - ((hue - 5) * 255); green = 0;
+	}
+
+	red = red + (255 - red) * satI;
+	green = green + (255 - green) * satI;
+	blue = blue + (255 - blue) * satI;
+
+	red = red * darkI;
+	green = green * darkI;
+	blue = blue * darkI;
+
+	return Color(static_cast<Uint8>(red), static_cast<Uint8>(green), static_cast<Uint8>(blue), static_cast<Uint8>(alphaI * 255));
 }

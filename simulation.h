@@ -21,12 +21,14 @@ public:
 	int mouseLastX = -1;
 	int mouseLastY = -1;
 
+	int sizePixel;
 	int nbRows;
 	int nbCols;
 	std::vector<std::vector< Particle* >> particleCollect;
 	std::vector<std::vector<int>> Moves;
 
-	Simulation();
+	Simulation(int nbC, int nbR);
+
 	void UpdateMove(sf::RenderWindow& window);
 	void Move();
 	void Render(sf::RenderWindow& window);
@@ -41,7 +43,7 @@ public:
 	bool V(int x, int y);
 	int GetRand(int a, int b);
 	void PlaceBTW(int matrixX1, int matrixY1, int matrixX2, int matrixY2, int type, int stroke);
-
+	sf::Color HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI);
 
 };
 
