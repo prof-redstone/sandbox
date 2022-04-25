@@ -10,11 +10,11 @@
 using namespace sf;
 using namespace std;
 
-enum type {air,sand,water,stone, wood, salt, saltWater, acide};
+enum type {air,sand,water,stone, wood, salt, saltWater, fire, steam, acide};
 enum MoveType { _Swap, _Replace };
 
 //initialisation of gride and other parameter
-Simulation::Simulation(int nbC, int nbR) {
+Simulation::Simulation(int nbC, int nbR,int  sP) {
 	//for SFML render window
 	image.create(50, 50, Color::Cyan);
 	texture.create(50, 50);
@@ -28,7 +28,7 @@ Simulation::Simulation(int nbC, int nbR) {
 	mouseType = sand;
 
 
-	sizePixel = 4;
+	sizePixel = sP;
 	nbCols = nbC/sizePixel;
 	nbRows = nbR/sizePixel;
 	cout << nbRows;
@@ -60,8 +60,7 @@ void Simulation::UpdateMove(sf::RenderWindow& window) {
 
 		mouseLastX = x;
 		mouseLastY = y;
-	}
-	else {
+	}else {
 		mouseStillPresse = 0;
 	}
 
@@ -257,7 +256,6 @@ int Simulation::GetRand(int a, int b) {
 	if (b - a == 0) { return a; }
 	return (rand() % (b - a)) + a;
 }
-
 
 void Simulation::PlaceBTW(int matrixX1, int matrixY1, int matrixX2, int matrixY2, int type, int stroke) {
 	// If the two points are the same no need to iterate. Just run the provided function

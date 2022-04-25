@@ -27,7 +27,7 @@ public:
 	std::vector<std::vector< Particle* >> particleCollect;
 	std::vector<std::vector<int>> Moves;
 
-	Simulation(int nbC, int nbR);
+	Simulation(int nbC, int nbR, int sp);
 
 	void UpdateMove(sf::RenderWindow& window);
 	void Move();

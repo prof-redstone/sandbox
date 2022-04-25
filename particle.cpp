@@ -10,16 +10,16 @@
 using namespace std;
 using namespace sf;
 
-enum type { air, sand, water, stone, wood, salt, saltWater, acide };
+enum type { air, sand, water, stone, wood, salt, saltWater, fire, steam, acide };
 enum MoveType { _Swap, _Replace };
 
 Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	type = Itype;
 	position = Ipos;
-    simulation = sim;
+	simulation = sim;
 
 	// to init the random
-	srand((unsigned)this* 41421356237 + (unsigned)type * 18748 + (unsigned)position[0]*1754241 + (unsigned)position[1] * 2864856);
+	srand((unsigned)this * 41421356237 + (unsigned)type * 18748 + (unsigned)position[0] * 1754241 + (unsigned)position[1] * 2864856);
 
 	//pour tous 
 	flamability = 0;
@@ -27,16 +27,17 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	fireConsumTime = 0;
 
 	if (type == air) {
+		fireConsumTime = 10;
 		color = Color(0, 0, 0);
 	}
 	if (type == stone) {
-		float gray = (double)GetRand(80, 100) ;
+		float gray = (double)GetRand(80, 100);
 		color = Color(gray, gray, gray);
 	}
 	if (type == wood) {
 		int vary = (double)GetRand(-15, 15);
-		color = Color(134 + vary, 55 + vary/2 , 11 );
-		flamability = 0.01;
+		color = Color(134 + vary, 55 + vary / 2, 11);
+		flamability = 0.05;
 		fireConsumTime = 600;
 	}
 	if (type == sand) {
@@ -47,7 +48,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		lastposition = position;
 		Xvel = 0;
 		Yvel = 0;
-		color = HSLtoRGB(((double)GetRand(62, 70) / 100),(double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
+		color = HSLtoRGB(((double)GetRand(62, 70) / 100), (double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
 	}
 	if (type == salt) {
 		WaterToWSaltProb = 0.01;
@@ -62,19 +63,18 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	}
 	if (type == water) {
 		pressure = 0;
-		Xvel = 0;
-		Yvel = 0;
 		flamability = 0.1;
+		fireConsumTime = 1;
 		color = HSLtoRGB(((double)GetRand(375, 385) / 100), 0.5, 0.5, 1.);
 	}
 	if (type == saltWater) {
 		pressure = 0;
-		Xvel = 0;
-		Yvel = 0;
 		flamability = 0.1;
 		color = HSLtoRGB(((double)GetRand(360, 375) / 100), 0.5, 0.5, 1.);
 	}
-
+	if (type == steam) {
+		color = HSLtoRGB(((double)GetRand(380, 385) / 100), 0.6, 0.15, 1.);
+	}
 }
 
 bool Particle::CanMove(int x, int y, int type) {
@@ -83,6 +83,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			int cellT = simulation->particleCollect[x][y]->type;
 			//le sable est plus dense et ou lourd que ces materiaux, il peut donc echanger sa place avec pour tomber.
 			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
 			if (cellT == water) { return true; }
 			if (cellT == acide) { return true; }
 			if (cellT == saltWater) { return true; }
@@ -93,6 +94,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			int cellT = simulation->particleCollect[x][y]->type;
 			//le sel est plus dense et ou lourd que ces materiaux, il peut donc echanger sa place avec pour tomber.
 			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
 			if (cellT == water) { return true; }
 			if (cellT == acide) { return true; }
 			if (cellT == saltWater) { return true; }
@@ -101,16 +103,19 @@ bool Particle::CanMove(int x, int y, int type) {
 		}
 		if (type == water) {
 			int cellT = simulation->particleCollect[x][y]->type;
-
 			if (cellT == air) { return true; }
-
+			if (cellT == steam) { return true; }
 			return false;
 		}
 		if (type == saltWater) {
 			int cellT = simulation->particleCollect[x][y]->type;
-
 			if (cellT == air) { return true; }
-
+			if (cellT == steam) { return true; }
+			return false;
+		}
+		if (type == steam) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			if (cellT == air) { return true; }
 			return false;
 		}
 	}
@@ -134,19 +139,13 @@ int Particle::GetTypeOf(int x, int y) {
 }
 
 void Particle::UpdateMove(int x, int y) {
-	if (type == sand) {
-		Sand(x, y);
-	}
-	else if (type == water) {
-		Water(x, y);
-	}
-	else if (type == salt) {
-		Salt(x, y);
-	}
-	else if (type == saltWater) {
-		SaltWater(x, y);
-	}
+	if (type == sand) {Sand(x, y);}
+	else if (type == water) {Water(x, y);}
+	else if (type == salt) {Salt(x, y);}
+	else if (type == saltWater) {SaltWater(x, y);}
+	else if (type == steam) {Steam(x, y);}
 
+	//si en feu, propagation, puis diminution.
 	if (fireConsumTimer > 0) {
 		SetNeighborFire(x,y);
 		fireConsumTimer--;
@@ -156,6 +155,12 @@ void Particle::UpdateMove(int x, int y) {
 	if (fireConsumTimer == 0) {
 		if (type == wood) {
 			simulation->AddMove(_Replace, air, wood, x, y, x, y);
+		}
+		if (type == water) {
+			simulation->AddMove(_Replace, steam, water, x, y, x, y);
+		}
+		if (type == saltWater) {
+			simulation->AddMove(_Replace, salt, saltWater, x, y, x, y);
 		}
 	}
 }
@@ -403,6 +408,9 @@ void Particle::Water(int x, int y) {
 				pressure -= 1;
 			}
 		}
+		if (pressure == 0) {
+			pressure = GetRand(0, 3)  - 1;
+		}
 		//et on bouge a droite ou a gauche en fonction du sens de la pression
 
 		if (pressure > 0 && r) {
@@ -439,6 +447,9 @@ void Particle::SaltWater(int x, int y) {
 				pressure -= 1;
 			}
 		}
+		if (pressure == 0) {
+			pressure = GetRand(0, 3) - 1;
+		}
 		//et on bouge a droite ou a gauche en fonction du sens de la pression
 
 		if (pressure > 0 && r) {
@@ -474,6 +485,45 @@ void Particle::SaltWater(int x, int y) {
 
 }
 
+void Particle::Steam(int x, int y) {
+	bool t = CanMove(x, y - 1, steam);
+	bool l = CanMove(x - 1, y, steam);
+	bool r = CanMove(x + 1, y, steam);
+	const int lengthPressure = 10;
+
+
+	if (t || l || r) {
+		if (t) {
+			simulation->AddMove(_Swap, steam, T(x, y - 1), x, y, x, y - 1);
+			return;
+		}
+		//calcule de la pression de chaque cote
+		pressure = 0;
+		for (int i = 0; (i < lengthPressure); i++)
+		{
+			if (simulation->ValidType(x + i, y, air)) {
+				pressure += 1;
+			}
+			if (simulation->ValidType(x - i, y, air)) {
+				pressure -= 1;
+			}
+		}
+		if (pressure == 0) {
+			pressure = GetRand(0, 3) - 1;
+		}
+		//et on bouge a droite ou a gauche en fonction du sens de la pression
+
+		if (pressure > 0 && r) {
+			simulation->AddMove(_Swap, steam, T(x + 1, y), x, y, x + 1, y);
+		}
+		else if (pressure < 0 && l) {
+			simulation->AddMove(_Swap, steam, T(x - 1, y), x, y, x - 1, y);
+		}
+
+		return;
+	}
+}
+
 void Particle::TransferInertia(int x, int y) {
 	if (simulation->V(x + 1, y)) {
 		simulation->particleCollect[x + 1][y]->RecivedInertia();
@@ -496,9 +546,11 @@ void Particle::RecivedInertia() {
 	}
 }
 
+//if cell on fire transmit it to neighbore, to propagate it
 void Particle::SetNeighborFire(int x, int y) {
-	int a = GetRand(-5, 5);
-	int b = GetRand(-5, 5);
+	const int firedist = 3;
+	int a = GetRand(-firedist, firedist);
+	int b = GetRand(-firedist, firedist);
 
 	if (x != 0 || y != 0) {
 		if (simulation->V(x + a, y + b)) {
@@ -509,9 +561,10 @@ void Particle::SetNeighborFire(int x, int y) {
 	}
 }
 
+//recive fire from neighbore cells, and depend on proba decide if cell is on fire
 void Particle::GetFire() {
-	if (fireConsumTimer <= 0) {
-		if (GetRand(0, 1000) / 1000 < flamability) {
+	if (fireConsumTimer < 0) {
+		if ((double)GetRand(0, 1000) / 1000 < flamability) {
 			fireConsumTimer = fireConsumTime + GetRand(-fireConsumTime / 4, fireConsumTime / 4);
 		}
 	}

@@ -24,8 +24,9 @@ int main()
 {
     int width = 1000;
     int height = 600;
+    int sizePixel = 4;
 
-    Simulation simulation = Simulation(width, height);
+    Simulation simulation = Simulation(width, height, sizePixel);
 
 
     int iterationPerFrame = 3;
