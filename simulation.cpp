@@ -10,7 +10,7 @@
 using namespace sf;
 using namespace std;
 
-enum type {air,sand,water,stone, wood, salt, saltWater, fire, steam, acide};
+enum type {air,sand,water,stone, wood, salt, saltWater, fire, steam, acide, oil, lava, ice, snow, coal, dirt, bedrock, strangeMatter};
 enum MoveType { _Swap, _Replace };
 
 //initialisation of gride and other parameter
@@ -45,9 +45,6 @@ Simulation::Simulation(int nbC, int nbR,int  sP) {
 
 //first function, who loop each frame to check at each cell to update it, and Move it, place all Move proposition in queu.
 void Simulation::UpdateMove(sf::RenderWindow& window) {
-	//test du feu
-	particleCollect[10][10]->fireConsumTimer = 1000;
-
 
 	if (mousePresse) {
 		if (mouseStillPresse == -1) { mouseStillPresse = 1; } //pour attendre 2 tours avant de l'activer, pour etre sur que lastX et Y soit bien du meme type
@@ -97,7 +94,8 @@ void Simulation::Render(sf::RenderWindow& window)
 				col = particleCollect[i][j]->color;
 			}
 			else {
-				col = HSLtoRGB((float)(particleCollect[i][j]->fireConsumTimer % 100) /100, 0.05, 0.95, 1.);
+				//si en feu
+				col = HSLtoRGB((float)((particleCollect[i][j]->fireConsumTimer + (unsigned)particleCollect[i][j]) % 100) /100, 0.05, 0.95, 1.);
 			}
 			for (int k = 0; k < sizePixel; k++) {
 				for (int l = 0; l < sizePixel; l++) {
@@ -171,29 +169,26 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			return "FPS DOWN";
 		}
-		if (event.key.code == Keyboard::T)//decrease limit
-		{
+		if (event.key.code == Keyboard::T){
 			mouseType = stone;
 		}
-		if (event.key.code == Keyboard::S)//decrease limit
-		{
+		if (event.key.code == Keyboard::S){
 			mouseType = sand;
 		}
-		if (event.key.code == Keyboard::A)//decrease limit
-		{
+		if (event.key.code == Keyboard::A){
 			mouseType = air;
 		}
-		if (event.key.code == Keyboard::W)//decrease limit
-		{
+		if (event.key.code == Keyboard::W){
 			mouseType = water;
 		}
-		if (event.key.code == Keyboard::O)//decrease limit
-		{
+		if (event.key.code == Keyboard::O){
 			mouseType = wood;
 		}
-		if (event.key.code == Keyboard::L)//decrease limit
-		{
+		if (event.key.code == Keyboard::L){
 			mouseType = salt;
+		}
+		if (event.key.code == Keyboard::F){
+			mouseType = fire;
 		}
 	}
 	return "0";
@@ -218,6 +213,19 @@ void Simulation::HandPlace(int x, int y, int type) {
 	if (type == stone || type == air || type == wood) {
 		if (mouseStillPresse == 1) {
 			PlaceBTW(x, y, mouseLastX, mouseLastY, type, stroke);
+		}
+	}
+	if (type == fire) {
+		const int nbplace = 70;
+		const int dist = 7;
+		for (int i = 0; i < nbplace; i++)
+		{
+			int nX = x + GetRand(-dist, dist);
+			int nY = y + GetRand(-dist, dist);
+			if (V(nX, nY)) {
+				particleCollect[nX][nY]->GetFire();
+				
+			}
 		}
 	}
 }

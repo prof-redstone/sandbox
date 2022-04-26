@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-enum type { air, sand, water, stone, wood, salt, saltWater, fire, steam, acide };
+enum type { air, sand, water, stone, wood, salt, saltWater, fire, steam, acide, oil, lava, ice, snow, coal, dirt, bedrock, concret, strangeMatter };
 enum MoveType { _Swap, _Replace };
 
 Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
@@ -24,10 +24,11 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	//pour tous 
 	flamability = 0;
 	fireConsumTimer = -1;
-	fireConsumTime = 0;
+	fireConsumTime = -1;
 
 	if (type == air) {
 		fireConsumTime = 10;
+		flamability = 0.05;
 		color = Color(0, 0, 0);
 	}
 	if (type == stone) {
@@ -70,10 +71,12 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	if (type == saltWater) {
 		pressure = 0;
 		flamability = 0.1;
+		fireConsumTime = 1;
 		color = HSLtoRGB(((double)GetRand(360, 375) / 100), 0.5, 0.5, 1.);
 	}
 	if (type == steam) {
-		color = HSLtoRGB(((double)GetRand(380, 385) / 100), 0.6, 0.15, 1.);
+		steamCondensationProb = 0.0001;
+		color = HSLtoRGB(((double)GetRand(380, 385) / 100), 0.6, 0.2, 1.);
 	}
 }
 
@@ -151,7 +154,7 @@ void Particle::UpdateMove(int x, int y) {
 		fireConsumTimer--;
 	}
 
-	//fini de bruler
+	//fini de bruler, peut se transformer en qq chose.
 	if (fireConsumTimer == 0) {
 		if (type == wood) {
 			simulation->AddMove(_Replace, air, wood, x, y, x, y);
@@ -161,6 +164,9 @@ void Particle::UpdateMove(int x, int y) {
 		}
 		if (type == saltWater) {
 			simulation->AddMove(_Replace, salt, saltWater, x, y, x, y);
+		}
+		if(type == air){
+			simulation->AddMove(_Replace, air, air, x, y, x, y);
 		}
 	}
 }
@@ -491,6 +497,10 @@ void Particle::Steam(int x, int y) {
 	bool r = CanMove(x + 1, y, steam);
 	const int lengthPressure = 10;
 
+	if ((double)GetRand(0, 1000) / 1000 < steamCondensationProb) {
+		simulation->AddMove(_Replace, water, steam, x, y, x, y - 1);
+		return;
+	}
 
 	if (t || l || r) {
 		if (t) {
@@ -565,7 +575,7 @@ void Particle::SetNeighborFire(int x, int y) {
 void Particle::GetFire() {
 	if (fireConsumTimer < 0) {
 		if ((double)GetRand(0, 1000) / 1000 < flamability) {
-			fireConsumTimer = fireConsumTime + GetRand(-fireConsumTime / 4, fireConsumTime / 4);
+			fireConsumTimer = fireConsumTime + GetRand(-fireConsumTime / 3, fireConsumTime / 3);
 		}
 	}
 	

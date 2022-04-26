@@ -36,6 +36,9 @@ public:
 
 	//for water
 	float WaterToWSaltProb; //prob for water next to salt, to transform in to salt water
+
+	//for steam
+	float steamCondensationProb;
 	
 
 
