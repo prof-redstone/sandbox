@@ -78,6 +78,12 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		steamCondensationProb = 0.0001;
 		color = HSLtoRGB(((double)GetRand(380, 385) / 100), 0.6, 0.2, 1.);
 	}
+	if (type == oil) {
+		pressure = 0;
+		flamability = 0.02;
+		fireConsumTime = 700;
+		color = HSLtoRGB(((double)GetRand(50, 55) / 100), 0.15, 0.2, 1.);
+	}
 }
 
 bool Particle::CanMove(int x, int y, int type) {
@@ -90,6 +96,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == water) { return true; }
 			if (cellT == acide) { return true; }
 			if (cellT == saltWater) { return true; }
+			if (cellT == oil) { return true; }
 				
 			return false;
 		}
@@ -101,6 +108,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == water) { return true; }
 			if (cellT == acide) { return true; }
 			if (cellT == saltWater) { return true; }
+			if (cellT == oil) { return true; }
 
 			return false;
 		}
@@ -108,18 +116,25 @@ bool Particle::CanMove(int x, int y, int type) {
 			int cellT = simulation->particleCollect[x][y]->type;
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
+			if (cellT == oil) { return true; }//because more dence
 			return false;
 		}
 		if (type == saltWater) {
 			int cellT = simulation->particleCollect[x][y]->type;
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
+			if (cellT == oil) { return true; }
 			return false;
 		}
 		if (type == steam) {
 			int cellT = simulation->particleCollect[x][y]->type;
 			if (cellT == air) { return true; }
 			return false;
+		}
+		if (type == oil) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
 		}
 	}
 	return false;
@@ -147,6 +162,7 @@ void Particle::UpdateMove(int x, int y) {
 	else if (type == salt) {Salt(x, y);}
 	else if (type == saltWater) {SaltWater(x, y);}
 	else if (type == steam) {Steam(x, y);}
+	else if (type == oil) { Oil(x, y); }
 
 	//si en feu, propagation, puis diminution.
 	if (fireConsumTimer > 0) {
@@ -167,6 +183,9 @@ void Particle::UpdateMove(int x, int y) {
 		}
 		if(type == air){
 			simulation->AddMove(_Replace, air, air, x, y, x, y);
+		}
+		if (type == oil) {
+			simulation->AddMove(_Replace, air, oil, x, y, x, y);
 		}
 	}
 }
@@ -407,10 +426,10 @@ void Particle::Water(int x, int y) {
 		pressure = 0;
 		for (int i = 0; (i < lengthPressure ); i++)
 		{
-			if (simulation->ValidType(x + i, y, air)) {
+			if (CanMove(x + i, y, water)) {
 				pressure += 1;
 			}
-			if (simulation->ValidType(x - i, y, air)) {
+			if (CanMove(x - i, y, water)) {
 				pressure -= 1;
 			}
 		}
@@ -446,10 +465,10 @@ void Particle::SaltWater(int x, int y) {
 		pressure = 0;
 		for (int i = 0; (i < lengthPressure); i++)
 		{
-			if (simulation->ValidType(x + i, y, air)) {
+			if (CanMove(x + i, y, saltWater)) {
 				pressure += 1;
 			}
-			if (simulation->ValidType(x - i, y, air)) {
+			if (CanMove(x - i, y, saltWater)) {
 				pressure -= 1;
 			}
 		}
@@ -534,6 +553,45 @@ void Particle::Steam(int x, int y) {
 	}
 }
 
+void Particle::Oil(int x, int y) {
+	bool b = CanMove(x, y + 1, oil);
+	bool l = CanMove(x - 1, y, oil);
+	bool r = CanMove(x + 1, y, oil);
+	const int lengthPressure = 10;
+
+
+	if (b || l || r) {
+		if (b) {
+			simulation->AddMove(_Swap, oil, T(x, y + 1), x, y, x, y + 1);
+			return;
+		}
+		//calcule de la pression de chaque cote
+		pressure = 0;
+		for (int i = 0; (i < lengthPressure); i++)
+		{
+			if (CanMove(x + i, y, oil)) {
+				pressure += 1;
+			}
+			if (CanMove(x - i, y, oil)) {
+				pressure -= 1;
+			}
+		}
+		if (pressure == 0) {
+			pressure = GetRand(0, 3) - 1;
+		}
+		//et on bouge a droite ou a gauche en fonction du sens de la pression
+
+		if (pressure > 0 && r) {
+			simulation->AddMove(_Swap, oil, T(x + 1, y), x, y, x + 1, y);
+		}
+		else if (pressure < 0 && l) {
+			simulation->AddMove(_Swap, oil, T(x - 1, y), x, y, x - 1, y);
+		}
+
+		return;
+	}
+}
+
 void Particle::TransferInertia(int x, int y) {
 	if (simulation->V(x + 1, y)) {
 		simulation->particleCollect[x + 1][y]->RecivedInertia();
@@ -559,8 +617,8 @@ void Particle::RecivedInertia() {
 //if cell on fire transmit it to neighbore, to propagate it
 void Particle::SetNeighborFire(int x, int y) {
 	const int firedist = 3;
-	int a = GetRand(-firedist, firedist);
-	int b = GetRand(-firedist, firedist);
+	int a = GetRand(-firedist, firedist+1);//+1 because the right value is exclude
+	int b = GetRand(-firedist, firedist+1);
 
 	if (x != 0 || y != 0) {
 		if (simulation->V(x + a, y + b)) {

@@ -190,6 +190,9 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		if (event.key.code == Keyboard::F){
 			mouseType = fire;
 		}
+		if (event.key.code == Keyboard::B) {
+			mouseType = oil;
+		}
 	}
 	return "0";
 }
@@ -198,7 +201,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 void Simulation::HandPlace(int x, int y, int type) {
 	const int stroke = 2;
 
-	if (type == sand || type == water || type == salt) { //all semi solid particle
+	if (type == sand || type == water || type == salt || type == snow || type == coal || type == dirt || type == acide || type == oil || type == lava || type == ice ) { //all semi solid particle, and liquide
 		const int nbplace = 15;
 		const int dist = 10;
 		for (int i = 0; i < nbplace; i++)
@@ -210,7 +213,7 @@ void Simulation::HandPlace(int x, int y, int type) {
 			}
 		}
 	}
-	if (type == stone || type == air || type == wood) {
+	if (type == stone || type == air || type == wood || type == bedrock) {
 		if (mouseStillPresse == 1) {
 			PlaceBTW(x, y, mouseLastX, mouseLastY, type, stroke);
 		}

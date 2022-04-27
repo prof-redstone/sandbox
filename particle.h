@@ -52,6 +52,7 @@ public:
 	void Water(int x, int y);
 	void SaltWater(int x, int y);
 	void Steam(int x, int y);
+	void Oil(int x, int y);
 	void TransferInertia(int x, int y);
 	void RecivedInertia();
 	void SetNeighborFire(int x, int y);

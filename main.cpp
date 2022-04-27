@@ -48,6 +48,9 @@ int main()
             if (commande == "FPS UP") {
                 iterationPerFrame++;
             }
+            if (commande == "FPS Down") {
+                iterationPerFrame--;
+            }
         }
         window.clear(Color::Black);
 
