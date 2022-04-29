@@ -24,6 +24,7 @@ public:
 	float flamability;
 	int fireConsumTimer;
 	int fireConsumTime;
+	float corrosion;//prob to an element to be attack by acid
 
 	//for movable solid like sand :
 	float friction;
@@ -39,6 +40,9 @@ public:
 
 	//for steam
 	float steamCondensationProb;
+
+	//acid
+	float acidCorrosionProb;
 	
 
 
@@ -47,12 +51,15 @@ public:
 	int T(int x, int y);
 	int GetTypeOf(int x, int y);
 	void UpdateMove(int x, int y);
+
 	void Sand(int x, int y);
 	void Salt(int x, int y);
 	void Water(int x, int y);
 	void SaltWater(int x, int y);
 	void Steam(int x, int y);
 	void Oil(int x, int y);
+	void Acid(int x, int y);
+
 	void TransferInertia(int x, int y);
 	void RecivedInertia();
 	void SetNeighborFire(int x, int y);

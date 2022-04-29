@@ -10,7 +10,7 @@
 using namespace std;
 using namespace sf;
 
-enum type { air, sand, water, stone, wood, salt, saltWater, fire, steam, acide, oil, lava, ice, snow, coal, dirt, bedrock, concret, strangeMatter };
+enum type { air, sand, water, stone, wood, salt, saltWater, fire, steam, acid, oil, lava, ice, snow, coal, dirt, bedrock, concret, strangeMatter };
 enum MoveType { _Swap, _Replace };
 
 Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
@@ -25,6 +25,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	flamability = 0;
 	fireConsumTimer = -1;
 	fireConsumTime = -1;
+	corrosion = 0.;
 
 	if (type == air) {
 		fireConsumTime = 10;
@@ -32,6 +33,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		color = Color(0, 0, 0);
 	}
 	if (type == stone) {
+		corrosion = 0.05;
 		float gray = (double)GetRand(80, 100);
 		color = Color(gray, gray, gray);
 	}
@@ -40,6 +42,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		color = Color(134 + vary, 55 + vary / 2, 11);
 		flamability = 0.05;
 		fireConsumTime = 600;
+		corrosion = 0.1;
 	}
 	if (type == sand) {
 		friction = 0.2;
@@ -49,6 +52,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		lastposition = position;
 		Xvel = 0;
 		Yvel = 0;
+		corrosion = 0.05;
 		color = HSLtoRGB(((double)GetRand(62, 70) / 100), (double)GetRand(20, 30) / 100, (double)GetRand(90, 95) / 100, 1.);
 	}
 	if (type == salt) {
@@ -60,6 +64,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		lastposition = position;
 		Xvel = 0;
 		Yvel = 0;
+		corrosion = 0.05;
 		color = HSLtoRGB(3.5, (double)GetRand(100, 90) / 100, 0.85, 1.);
 	}
 	if (type == water) {
@@ -82,10 +87,53 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		pressure = 0;
 		flamability = 0.02;
 		fireConsumTime = 700;
+		corrosion = 0.2;
 		color = HSLtoRGB(((double)GetRand(50, 55) / 100), 0.15, 0.2, 1.);
+	}
+	if (type == acid) {
+		acidCorrosionProb = 0.1;
+		pressure = 0;
+		flamability = 0.;
+		color = HSLtoRGB(((double)GetRand(110, 140) / 100), 0.08, 0.7, 1.);
 	}
 }
 
+void Particle::UpdateMove(int x, int y) {
+	if (type == sand) { Sand(x, y); }
+	else if (type == water) { Water(x, y); }
+	else if (type == salt) { Salt(x, y); }
+	else if (type == saltWater) { SaltWater(x, y); }
+	else if (type == steam) { Steam(x, y); }
+	else if (type == oil) { Oil(x, y); }
+	else if (type == acid) { Acid(x, y); }
+
+	//si en feu, propagation, puis diminution.
+	if (fireConsumTimer > 0) {
+		SetNeighborFire(x, y);
+		fireConsumTimer--;
+	}
+
+	//fini de bruler, peut se transformer en qq chose.
+	if (fireConsumTimer == 0) {
+		if (type == wood) {
+			simulation->AddMove(_Replace, air, wood, x, y, x, y);
+		}
+		if (type == water) {
+			simulation->AddMove(_Replace, steam, water, x, y, x, y);
+		}
+		if (type == saltWater) {
+			simulation->AddMove(_Replace, salt, saltWater, x, y, x, y);
+		}
+		if (type == air) {
+			simulation->AddMove(_Replace, air, air, x, y, x, y);
+		}
+		if (type == oil) {
+			simulation->AddMove(_Replace, air, oil, x, y, x, y);
+		}
+	}
+}
+
+//function that return true if element can swap position with another, like water can swap with air. 
 bool Particle::CanMove(int x, int y, int type) {
 	if (simulation->V(x, y)) {
 		if (type == sand) {
@@ -94,7 +142,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
 			if (cellT == water) { return true; }
-			if (cellT == acide) { return true; }
+			if (cellT == acid) { return true; }
 			if (cellT == saltWater) { return true; }
 			if (cellT == oil) { return true; }
 				
@@ -106,7 +154,7 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
 			if (cellT == water) { return true; }
-			if (cellT == acide) { return true; }
+			if (cellT == acid) { return true; }
 			if (cellT == saltWater) { return true; }
 			if (cellT == oil) { return true; }
 
@@ -114,9 +162,10 @@ bool Particle::CanMove(int x, int y, int type) {
 		}
 		if (type == water) {
 			int cellT = simulation->particleCollect[x][y]->type;
+			//l'eau est plus dense que ces materieux donc peut echanger de place.
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
-			if (cellT == oil) { return true; }//because more dence
+			if (cellT == oil) { return true; }
 			return false;
 		}
 		if (type == saltWater) {
@@ -136,6 +185,15 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == air) { return true; }
 			if (cellT == steam) { return true; }
 		}
+		if (type == acid) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
+			if (cellT == oil) { return true; }//because more dence
+			if (cellT == water) { return true; }//because more dence
+			if (cellT == saltWater) { return true; }//because more dence
+			return false;
+		}
 	}
 	return false;
 }
@@ -153,40 +211,6 @@ int Particle::GetTypeOf(int x, int y) {
 	}
 	else {
 		return -1;
-	}
-}
-
-void Particle::UpdateMove(int x, int y) {
-	if (type == sand) {Sand(x, y);}
-	else if (type == water) {Water(x, y);}
-	else if (type == salt) {Salt(x, y);}
-	else if (type == saltWater) {SaltWater(x, y);}
-	else if (type == steam) {Steam(x, y);}
-	else if (type == oil) { Oil(x, y); }
-
-	//si en feu, propagation, puis diminution.
-	if (fireConsumTimer > 0) {
-		SetNeighborFire(x,y);
-		fireConsumTimer--;
-	}
-
-	//fini de bruler, peut se transformer en qq chose.
-	if (fireConsumTimer == 0) {
-		if (type == wood) {
-			simulation->AddMove(_Replace, air, wood, x, y, x, y);
-		}
-		if (type == water) {
-			simulation->AddMove(_Replace, steam, water, x, y, x, y);
-		}
-		if (type == saltWater) {
-			simulation->AddMove(_Replace, salt, saltWater, x, y, x, y);
-		}
-		if(type == air){
-			simulation->AddMove(_Replace, air, air, x, y, x, y);
-		}
-		if (type == oil) {
-			simulation->AddMove(_Replace, air, oil, x, y, x, y);
-		}
 	}
 }
 
@@ -499,10 +523,10 @@ void Particle::SaltWater(int x, int y) {
 				simulation->AddMove(_Swap, saltWater, water, x, y, x - 1, y);
 			}
 			if (ran == 2 && simulation->V(x, y+1)) {
-				simulation->AddMove(_Swap, saltWater, water, x, y, x, y+1);
+simulation->AddMove(_Swap, saltWater, water, x, y, x, y + 1);
 			}
-			if (ran == 3 && simulation->V(x, y-1)) {
-				simulation->AddMove(_Swap, saltWater, water, x, y, x, y-1);
+			if (ran == 3 && simulation->V(x, y - 1)) {
+				simulation->AddMove(_Swap, saltWater, water, x, y, x, y - 1);
 			}
 
 		}
@@ -590,6 +614,60 @@ void Particle::Oil(int x, int y) {
 
 		return;
 	}
+}
+
+void Particle::Acid(int x, int y) {
+	bool b = CanMove(x, y + 1, acid);
+	bool l = CanMove(x - 1, y, acid);
+	bool r = CanMove(x + 1, y, acid);
+	const int lengthPressure = 10;
+
+	if ((double)GetRand(0, 1000) / 1000 < acidCorrosionProb) {
+		
+		int corroX = GetRand(0, 2) * 2 - 1;
+		int corroY = GetRand(0, 2) * 2 - 1;
+		if (simulation->V(corroX + x, corroY + y)) {
+			if (((double)GetRand(0, 1000) / 1000) < simulation->particleCollect[corroX + x][corroY + y]->corrosion){
+				simulation->AddMove(_Replace, air, acid, x, y, x, y);
+				simulation->AddMove(_Replace, air, T(x + corroX, y + corroY), x + corroX, y + corroY, x + corroX, y + corroY);
+			}
+		}
+
+	}
+
+
+	if (b || l || r) {
+		if (b) {
+			simulation->AddMove(_Swap, acid, T(x, y + 1), x, y, x, y + 1);
+			return;
+		}
+		//calcule de la pression de chaque cote
+		pressure = 0;
+		for (int i = 0; (i < lengthPressure); i++)
+		{
+			if (CanMove(x + i, y, acid)) {
+				pressure += 1;
+			}
+			if (CanMove(x - i, y, acid)) {
+				pressure -= 1;
+			}
+		}
+		if (pressure == 0) {
+			pressure = GetRand(0, 3) - 1;
+		}
+		//et on bouge a droite ou a gauche en fonction du sens de la pression
+
+		if (pressure > 0 && r) {
+			simulation->AddMove(_Swap, acid, T(x + 1, y), x, y, x + 1, y);
+		}
+		else if (pressure < 0 && l) {
+			simulation->AddMove(_Swap, acid, T(x - 1, y), x, y, x - 1, y);
+		}
+
+		return;
+	}
+
+
 }
 
 void Particle::TransferInertia(int x, int y) {

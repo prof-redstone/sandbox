@@ -10,7 +10,8 @@
 using namespace sf;
 using namespace std;
 
-enum type {air,sand,water,stone, wood, salt, saltWater, fire, steam, acide, oil, lava, ice, snow, coal, dirt, bedrock, strangeMatter};
+//if want to add new element add it to inputHandler for button and handplace.
+enum type {air,sand,water,stone, wood, salt, saltWater, fire, steam, acid, oil, lava, ice, snow, coal, dirt, bedrock, strangeMatter};
 enum MoveType { _Swap, _Replace };
 
 //initialisation of gride and other parameter
@@ -169,6 +170,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			return "FPS DOWN";
 		}
+
 		if (event.key.code == Keyboard::T){
 			mouseType = stone;
 		}
@@ -193,6 +195,9 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		if (event.key.code == Keyboard::B) {
 			mouseType = oil;
 		}
+		if (event.key.code == Keyboard::C) {
+			mouseType = acid;
+		}
 	}
 	return "0";
 }
@@ -201,7 +206,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 void Simulation::HandPlace(int x, int y, int type) {
 	const int stroke = 2;
 
-	if (type == sand || type == water || type == salt || type == snow || type == coal || type == dirt || type == acide || type == oil || type == lava || type == ice ) { //all semi solid particle, and liquide
+	if (type == sand || type == water || type == salt || type == snow || type == coal || type == dirt || type == acid || type == oil || type == lava || type == ice ) { //all semi solid particle, and liquide
 		const int nbplace = 15;
 		const int dist = 10;
 		for (int i = 0; i < nbplace; i++)
