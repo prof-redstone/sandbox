@@ -15,8 +15,8 @@ enum MoveType { _Swap, _Replace };
 
 Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	type = Itype;
-	position = Ipos;
 	simulation = sim;
+	position = Ipos;//position utile pour sable, sel
 
 	// to init the random
 	srand((unsigned)this * 41421356237 + (unsigned)type * 18748 + (unsigned)position[0] * 1754241 + (unsigned)position[1] * 2864856);
@@ -96,6 +96,13 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		flamability = 0.;
 		color = HSLtoRGB(((double)GetRand(110, 140) / 100), 0.08, 0.7, 1.);
 	}
+	if (type == lava) {
+		viscosity = 0.5;
+		pressure = 0;
+		flamability = 0;
+		fireConsumTime = -1;
+		color = HSLtoRGB(((double)GetRand(20, 40) / 100), 0.0, 0.95, 1.);
+	}
 }
 
 void Particle::UpdateMove(int x, int y) {
@@ -106,6 +113,7 @@ void Particle::UpdateMove(int x, int y) {
 	else if (type == steam) { Steam(x, y); }
 	else if (type == oil) { Oil(x, y); }
 	else if (type == acid) { Acid(x, y); }
+	else if (type == lava) { Lava(x, y); }
 
 	//si en feu, propagation, puis diminution.
 	if (fireConsumTimer > 0) {
@@ -192,6 +200,16 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == oil) { return true; }//because more dence
 			if (cellT == water) { return true; }//because more dence
 			if (cellT == saltWater) { return true; }//because more dence
+			return false;
+		}
+		if (type == lava) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
+			if (cellT == oil) { return true; }//because more dence
+			if (cellT == water) { return true; }
+			if (cellT == saltWater) { return true; }
+			if (cellT == acid) { return true; }
 			return false;
 		}
 	}
@@ -668,6 +686,103 @@ void Particle::Acid(int x, int y) {
 	}
 
 
+}
+
+void Particle::Lava(int x, int y) {
+	bool b = CanMove(x, y + 1, lava);
+	bool l = CanMove(x - 1, y, lava);
+	bool r = CanMove(x + 1, y, lava);
+	const int lengthPressure = 10;
+
+
+	SetNeighborFire(x, y);
+
+	if (b || l || r) {
+
+
+		if (b) {
+			simulation->AddMove(_Swap, lava, T(x, y + 1), x, y, x, y + 1);
+			return;
+		}
+		if ((double)GetRand(0, 100)/100 < viscosity) {
+			//calcule de la pression de chaque cote
+			pressure = 0;
+			for (int i = 0; (i < lengthPressure); i++)
+			{
+				if (CanMove(x + i, y, lava)) {
+					pressure += 1;
+				}
+				if (CanMove(x - i, y, lava)) {
+					pressure -= 1;
+				}
+			}
+			if (pressure == 0) {
+				pressure = GetRand(0, 3) - 1;
+			}
+			//et on bouge a droite ou a gauche en fonction du sens de la pression
+
+			if (pressure > 0 && r) {
+				simulation->AddMove(_Swap, lava, T(x + 1, y), x, y, x + 1, y);
+			}
+			else if (pressure < 0 && l) {
+				simulation->AddMove(_Swap, lava, T(x - 1, y), x, y, x - 1, y);
+			}
+
+			return;
+		}
+	}
+
+	if ((double)GetRand(0, 1000) / 1000 < 0.05) {
+
+		int Xadder = GetRand(0, 3) - 1;
+		int Yadder = GetRand(0, 3) - 1;
+		if (simulation->V(Xadder + x, Yadder + y)) {
+
+			int t = T(Xadder + x, Yadder + y);
+			if (t == water || t == saltWater || t == oil || t == acid) {
+				if ((double)GetRand(0, 100)/100 < 0.5) {
+					simulation->AddMove(_Replace, stone, lava, x, y, x, y);
+					return;
+				}
+			}
+
+			if (t == air) {
+				if ((double)GetRand(0, 1000)/1000 < 0.00002) {
+					simulation->AddMove(_Replace, stone, lava, x, y, x, y);
+					return;
+				}
+			}
+
+			if (t == stone || t == wood || t == sand || t == salt) {
+				if ((double)GetRand(0, 100) / 100 < 0.1) {
+					simulation->AddMove(_Replace, stone, lava, x, y, x, y);
+					return;
+				}
+			}
+		}
+
+	}
+
+}
+
+float Particle::GetTemperature(int x, int y) {
+	int t = simulation->particleCollect[x][y]->type;
+	if (t == air) {
+		return 0.;
+	}
+	if (t == water) {
+		return 0.;
+	}
+	if (t == air) {
+		return 0.;
+	}
+	if (t == air) {
+		return 0.;
+
+	}
+
+
+	return 0;
 }
 
 void Particle::TransferInertia(int x, int y) {

@@ -43,6 +43,9 @@ public:
 
 	//acid
 	float acidCorrosionProb;
+
+	//lava
+	float viscosity;
 	
 
 
@@ -59,7 +62,9 @@ public:
 	void Steam(int x, int y);
 	void Oil(int x, int y);
 	void Acid(int x, int y);
+	void Lava(int x, int y);
 
+	float GetTemperature(int x, int y);
 	void TransferInertia(int x, int y);
 	void RecivedInertia();
 	void SetNeighborFire(int x, int y);
