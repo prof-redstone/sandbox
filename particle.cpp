@@ -103,6 +103,19 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		fireConsumTime = -1;
 		color = HSLtoRGB(((double)GetRand(20, 40) / 100), 0.0, 0.95, 1.);
 	}
+	if (type == coal) {
+		friction = 0.5;
+		inertieTransfer = 0.15; //entre 0.5 et 0.03
+		isFalingTime = 0; //compteur pour savoir pendant combient de temps elle tombe
+		moving = false; //false si elle n'a pas bouge entre 2 simulation
+		lastposition = position;
+		Xvel = 0;
+		Yvel = 0;
+		flamability = 0.01;
+		fireConsumTime = 1500;
+		corrosion = 0.05;
+		color = HSLtoRGB(((double)GetRand(62, 70) / 100), 0.99, (double)GetRand(5, 15) / 100, 1.);
+	}
 }
 
 void Particle::UpdateMove(int x, int y) {
@@ -114,6 +127,8 @@ void Particle::UpdateMove(int x, int y) {
 	else if (type == oil) { Oil(x, y); }
 	else if (type == acid) { Acid(x, y); }
 	else if (type == lava) { Lava(x, y); }
+	else if (type == coal) { Coal(x, y); }
+
 
 	//si en feu, propagation, puis diminution.
 	if (fireConsumTimer > 0) {
@@ -137,6 +152,9 @@ void Particle::UpdateMove(int x, int y) {
 		}
 		if (type == oil) {
 			simulation->AddMove(_Replace, air, oil, x, y, x, y);
+		}
+		if (type == coal) {
+			simulation->AddMove(_Replace, air, coal, x, y, x, y);
 		}
 	}
 }
@@ -210,6 +228,18 @@ bool Particle::CanMove(int x, int y, int type) {
 			if (cellT == water) { return true; }
 			if (cellT == saltWater) { return true; }
 			if (cellT == acid) { return true; }
+			return false;
+		}
+		if (type == coal) {
+			int cellT = simulation->particleCollect[x][y]->type;
+			//le sable est plus dense et ou lourd que ces materiaux, il peut donc echanger sa place avec pour tomber.
+			if (cellT == air) { return true; }
+			if (cellT == steam) { return true; }
+			if (cellT == water) { return true; }
+			if (cellT == acid) { return true; }
+			if (cellT == saltWater) { return true; }
+			if (cellT == oil) { return true; }
+
 			return false;
 		}
 	}
@@ -441,7 +471,7 @@ void Particle::Salt(int x, int y) {
 		}
 	}
 
-	
+	//dilution
 	if (GetTypeOf(x, y+1) == water || GetTypeOf(x, y-1) == water || GetTypeOf(x+1, y) == water || GetTypeOf(x-1, y) == water) {
 		
 		if ( ( (float)GetRand(0, 100) / (float)100) < WaterToWSaltProb) {
@@ -765,24 +795,115 @@ void Particle::Lava(int x, int y) {
 
 }
 
-float Particle::GetTemperature(int x, int y) {
-	int t = simulation->particleCollect[x][y]->type;
-	if (t == air) {
-		return 0.;
-	}
-	if (t == water) {
-		return 0.;
-	}
-	if (t == air) {
-		return 0.;
-	}
-	if (t == air) {
-		return 0.;
+void Particle::Coal(int x, int y) {
+	bool b = CanMove(x, y + 1, coal);
+	bool bl = CanMove(x - 1, y + 1, coal);
+	bool br = CanMove(x + 1, y + 1, coal);
+	bool l = CanMove(x - 1, y, coal);
+	bool r = CanMove(x + 1, y, coal);
 
+	if (position[0] != x || position[1] != y) {//mettre à jour la position et l'ancienne si elle a change
+		lastposition = { position[0], position[1] };
+		position = { x,y };
+		moving = true;
 	}
 
+	if (moving) { //si a bouge juste avant ou voisin lui permet de bouger
 
-	return 0;
+		if (b || bl || br) {
+			isFalingTime++;
+			Yvel = ((isFalingTime / 10) > 4) ? 4 : isFalingTime / 10; //plus elle tombe depuis longtemps plus elle a d'inertie
+			moving = true;
+			if (b) {
+				simulation->AddMove(_Swap, coal, T(x, y + 1), x, y, x, y + 1);
+			}
+			else if (friction < 1.) {
+				if (bl && br) {
+					if (GetRand(0, 100) > 50) {
+						simulation->AddMove(_Swap, coal, T(x - 1, y + 1), x, y, x - 1, y + 1);
+					}
+					else {
+						simulation->AddMove(_Swap, coal, T(x + 1, y + 1), x, y, x + 1, y + 1);
+					}
+				}
+				else if (bl) {
+					simulation->AddMove(_Swap, coal, T(x - 1, y + 1), x, y, x - 1, y + 1);
+				}
+				else if (br) {
+					simulation->AddMove(_Swap, coal, T(x + 1, y + 1), x, y, x + 1, y + 1);
+				}
+
+			}
+			else {
+				if ((GetRand(0, 1001) / 1000.) > (friction - 1.)) {
+					if (bl && br) {
+						if (GetRand(0, 100) > 50) {
+							simulation->AddMove(_Swap, coal, T(x - 1, y + 1), x, y, x - 1, y + 1);
+						}
+						else {
+							simulation->AddMove(_Swap, coal, T(x + 1, y + 1), x, y, x + 1, y + 1);
+						}
+					}
+					else if (bl) {
+						simulation->AddMove(_Swap, coal, T(x - 1, y + 1), x, y, x - 1, y + 1);
+					}
+					else if (br) {
+						simulation->AddMove(_Swap, coal, T(x + 1, y + 1), x, y, x + 1, y + 1);
+					}
+				}
+				else {
+					moving = false;
+				}
+			}
+			//transmettre moving au voisin, pour la transmission d'inertie.
+			TransferInertia(x, y);
+			return;
+		}
+
+		moving = false; // n'a donc pas pu bouger
+
+		//si Inertie horizontal et peut aller gauche ou droite
+		if ((l || r)) {
+			//Si inertie Vertical, convertire en inertie H, car touche le sol
+			isFalingTime = 0;
+			//convertion de l'energie vertical en horizontal
+			if (Yvel != 0) {
+				if (l && r) {
+					Xvel = (GetRand(0, 2) * 2 - 1) * Yvel;
+				}
+				else if (l) {
+					Xvel = -1 * Yvel;
+				}
+				else if (r) {
+					Xvel = 1 * Yvel;
+				}
+				Yvel = 0;
+			}
+		}
+
+	}
+	else if (b) { //si n'a pas bouge depuis la dernière fois, regarde que en dessous en dessous
+		simulation->AddMove(_Swap, coal, T(x, y + 1), x, y, x, y + 1);
+		TransferInertia(x, y);
+		return;
+	}
+	//si la particle a de l'inertie horizontal et qu'elle n'a pas pu bouger 
+	if (Xvel != 0) {
+		Xvel = ((GetRand(0, 1001) / 1000.) < friction) ? Xvel / 2 : Xvel;
+		if (l || r) {
+			TransferInertia(x, y);
+			if (Xvel > 0 && r) {
+				simulation->AddMove(_Swap, coal, T(x + 1, y), x, y, x + 1, y);
+				return;
+			}
+			if (Xvel < 0 && l) {
+				simulation->AddMove(_Swap, coal, T(x - 1, y), x, y, x - 1, y);
+				return;
+			}
+		}
+	}
+
+	return;
 }
 
 void Particle::TransferInertia(int x, int y) {

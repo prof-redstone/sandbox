@@ -201,6 +201,9 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		if (event.key.code == Keyboard::V) {
 			mouseType = lava;
 		}
+		if (event.key.code == Keyboard::Q) {
+			mouseType = coal;
+		}
 	}
 	return "0";
 }
