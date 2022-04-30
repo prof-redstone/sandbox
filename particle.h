@@ -64,6 +64,7 @@ public:
 	void Acid(int x, int y);
 	void Lava(int x, int y);
 	void Coal(int x, int y);
+	void Snow(int x, int y);
 
 	void TransferInertia(int x, int y);
 	void RecivedInertia();
