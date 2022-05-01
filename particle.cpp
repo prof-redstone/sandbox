@@ -85,7 +85,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	}
 	if (type == oil) {
 		pressure = 0;
-		flamability = 0.02;
+		flamability = 0.1;
 		fireConsumTime = 700;
 		corrosion = 0.2;
 		color = HSLtoRGB(((double)GetRand(50, 55) / 100), 0.15, 0.2, 1.);
@@ -127,7 +127,14 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		flamability = 0.05;
 		fireConsumTime = 1;
 		corrosion = 0.05;
-		color = HSLtoRGB(((double)GetRand(360, 375) / 100), 0.9, 0.9, 1.);
+		color = HSLtoRGB(((double)GetRand(360, 375) / 100), ((double)GetRand(85, 95) / 100), 0.9, 1.);
+	}
+	if (type == ice) {
+		int vary = (double)GetRand(-15, 15);
+		color = HSLtoRGB(((double)GetRand(360, 375) / 100), ((double)GetRand(60, 65) / 100), 0.8, 1.);
+		flamability = 0.05;
+		fireConsumTime = 1;
+		corrosion = 0.05;
 	}
 }
 
@@ -172,6 +179,9 @@ void Particle::UpdateMove(int x, int y) {
 		}
 		if (type == snow) {
 			simulation->AddMove(_Replace, water, snow, x, y, x, y);
+		}
+		if (type == ice) {
+			simulation->AddMove(_Replace, water, ice, x, y, x, y);
 		}
 	}
 }

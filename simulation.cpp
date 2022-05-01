@@ -192,7 +192,7 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		if (event.key.code == Keyboard::F){
 			mouseType = fire;
 		}
-		if (event.key.code == Keyboard::B) {
+		if (event.key.code == Keyboard::I) {
 			mouseType = oil;
 		}
 		if (event.key.code == Keyboard::C) {
@@ -207,15 +207,18 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		if (event.key.code == Keyboard::N) {
 			mouseType = snow;
 		}
+		if (event.key.code == Keyboard::G) {
+			mouseType = ice;
+		}
 	}
 	return "0";
 }
 
 //call by InputHandler to place cell in grid when mouse cleck is pressed
 void Simulation::HandPlace(int x, int y, int type) {
-	const int stroke = 2;
+	const int stroke = 12 / sizePixel;
 
-	if (type == sand || type == water || type == salt || type == snow || type == coal || type == dirt || type == acid || type == oil || type == lava || type == ice ) { //all semi solid particle, and liquide
+	if (type == sand || type == water || type == salt || type == snow || type == coal || type == dirt || type == acid || type == oil || type == lava ) { //all semi solid particle, and liquide
 		const int nbplace = 15;
 		const int dist = 10;
 		for (int i = 0; i < nbplace; i++)
@@ -227,7 +230,7 @@ void Simulation::HandPlace(int x, int y, int type) {
 			}
 		}
 	}
-	if (type == stone || type == air || type == wood || type == bedrock) {
+	if (type == stone || type == air || type == wood || type == bedrock || type == ice) {
 		if (mouseStillPresse == 1) {
 			PlaceBTW(x, y, mouseLastX, mouseLastY, type, stroke);
 		}

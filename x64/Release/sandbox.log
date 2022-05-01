@@ -19,18 +19,21 @@ C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(67
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(72,20): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(78,20): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(83,33): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(88,21): warning C4305: '=' : troncation de 'double' à 'float'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(88,20): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(90,18): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(94,26): warning C4305: '=' : troncation de 'double' à 'float'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(94,27): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(108,25): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(114,21): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(116,19): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(121,24): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(127,21): warning C4305: '=' : troncation de 'double' à 'float'
 C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(129,19): warning C4305: '=' : troncation de 'double' à 'float'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(133,12): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(135,21): warning C4305: '=' : troncation de 'double' à 'float'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(137,19): warning C4305: '=' : troncation de 'double' à 'float'
   Génération de code en cours
   1 of 331 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+    3 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Release\sandbox.exe
