@@ -26,6 +26,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 	fireConsumTimer = -1;
 	fireConsumTime = -1;
 	corrosion = 0.;
+	meltProb = 0;
 
 	if (type == air) {
 		fireConsumTime = 10;
@@ -101,6 +102,7 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		pressure = 0;
 		flamability = 0;
 		fireConsumTime = -1;
+		meltProb = 0.05; //not melt (inverse) but it's ok
 		color = HSLtoRGB(((double)GetRand(20, 40) / 100), 0.0, 0.95, 1.);
 	}
 	if (type == coal) {
@@ -124,17 +126,25 @@ Particle::Particle(int Itype, vector<int> Ipos, Simulation* sim) {
 		lastposition = position;
 		Xvel = 0;
 		Yvel = 0;
+		meltProb = 0.1;
 		flamability = 0.05;
 		fireConsumTime = 1;
 		corrosion = 0.05;
 		color = HSLtoRGB(((double)GetRand(360, 375) / 100), ((double)GetRand(85, 95) / 100), 0.9, 1.);
 	}
 	if (type == ice) {
+
 		int vary = (double)GetRand(-15, 15);
 		color = HSLtoRGB(((double)GetRand(360, 375) / 100), ((double)GetRand(60, 65) / 100), 0.8, 1.);
 		flamability = 0.05;
 		fireConsumTime = 1;
+		meltProb = 0.01;
 		corrosion = 0.05;
+	}
+	if (type == bedrock) {
+		//neutral element, no fire, no corrosion, no gravity
+		float gray = (double)GetRand(20, 70);
+		color = Color(gray, gray, gray);
 	}
 }
 
@@ -149,6 +159,7 @@ void Particle::UpdateMove(int x, int y) {
 	else if (type == lava) { Lava(x, y); }
 	else if (type == coal) { Coal(x, y); }
 	else if (type == snow) { Snow(x, y); }
+	else if (type == ice) { Ice(x, y); }
 
 
 	//si en feu, propagation, puis diminution.
@@ -801,7 +812,7 @@ void Particle::Lava(int x, int y) {
 		}
 	}
 
-	if ((double)GetRand(0, 1000) / 1000 < 0.05) {
+	if ((double)GetRand(0, 1000) / 1000 < meltProb) {
 
 		int Xadder = GetRand(0, 3) - 1;
 		int Yadder = GetRand(0, 3) - 1;
@@ -1053,7 +1064,7 @@ void Particle::Snow(int x, int y) {
 		}
 	}
 
-	if ((double)GetRand(0, 1000) / 1000 < 0.1) {
+	if ((double)GetRand(0, 1000) / 1000 < meltProb) {
 
 		int Xadder = GetRand(0, 3) - 1;
 		int Yadder = GetRand(0, 3) - 1;
@@ -1061,7 +1072,7 @@ void Particle::Snow(int x, int y) {
 
 			int t = T(Xadder + x, Yadder + y);
 
-			if (t == lava ) {
+			if (t == lava || t == steam) {
 				if ((double)GetRand(0, 100) / 100 < 0.5) {
 					simulation->AddMove(_Replace, water, snow, x, y, x, y);
 					return;
@@ -1086,6 +1097,42 @@ void Particle::Snow(int x, int y) {
 	}
 
 	return;
+}
+
+void Particle::Ice(int x, int y) {
+	//not moving just melt
+	if ((double)GetRand(0, 1000) / 1000 < meltProb) {
+
+		int Xadder = GetRand(0, 3) - 1;
+		int Yadder = GetRand(0, 3) - 1;
+		if (simulation->V(Xadder + x, Yadder + y)) {
+
+			int t = T(Xadder + x, Yadder + y);
+
+			if (t == lava || t == steam) {
+				if ((double)GetRand(0, 100) / 100 < 0.5) {
+					simulation->AddMove(_Replace, water, ice, x, y, x, y);
+					return;
+				}
+			}
+
+			if (t == water || t == saltWater || t == steam) {
+				if ((double)GetRand(0, 1000) / 1000 < 0.1) {
+					simulation->AddMove(_Replace, water, ice, x, y, x, y);
+					return;
+				}
+			}
+
+			if (t == air) {
+				if ((double)GetRand(0, 100) / 100 < 0.01) {
+					simulation->AddMove(_Replace, water, ice, x, y, x, y);
+					return;
+				}
+			}
+		}
+
+	}
+
 }
 
 void Particle::TransferInertia(int x, int y) {

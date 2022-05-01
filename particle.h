@@ -47,6 +47,8 @@ public:
 	//lava
 	float viscosity;
 	
+	//snow, ice, lava
+	float meltProb; //prob for snow and ice to melt into water, and lava to transform in stone
 
 
 	Particle(int Itype, vector<int> Ipos, Simulation* sim);
@@ -65,6 +67,7 @@ public:
 	void Lava(int x, int y);
 	void Coal(int x, int y);
 	void Snow(int x, int y);
+	void Ice(int x, int y);
 
 	void TransferInertia(int x, int y);
 	void RecivedInertia();

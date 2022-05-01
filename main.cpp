@@ -44,6 +44,7 @@ int main()
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
+
             String commande = simulation.InputHandler(event, window);
             if (commande == "FPS UP") {
                 iterationPerFrame++;
@@ -54,6 +55,7 @@ int main()
         }
         window.clear(Color::Black);
 
+        //tourner la simulation plusieur fois avant le render
         for (int i = 0; i < iterationPerFrame; i++){
             simulation.UpdateMove(window);
             simulation.Move();

@@ -1,39 +1,22 @@
-﻿  particle.cpp
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,23): warning C4311: 'cast de type' : troncation de pointeur de 'Particle *' à 'unsigned int'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,23): warning C4302: 'cast de type' : troncation de 'Particle *' à 'unsigned int'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(22,96): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(32,21): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(36,19): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(37,14): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(38,29): warning C4244: 'argument' : conversion de 'float' en 'sf::Uint8', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(38,23): warning C4244: 'argument' : conversion de 'float' en 'sf::Uint8', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(38,17): warning C4244: 'argument' : conversion de 'float' en 'sf::Uint8', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(41,12): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(43,21): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(45,18): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(48,17): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(55,19): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(59,26): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(60,17): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(67,19): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(72,20): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(78,20): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(83,33): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(88,20): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(90,18): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(94,27): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(108,25): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(114,21): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(116,19): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(121,24): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(127,21): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(129,19): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(133,12): warning C4244: 'initialisation' : conversion de 'double' en 'int', perte possible de données
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(135,21): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\particle.cpp(137,19): warning C4305: '=' : troncation de 'double' à 'float'
+﻿  simulation.cpp
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(24,23): warning C4311: 'cast de type' : troncation de pointeur de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(24,23): warning C4302: 'cast de type' : troncation de 'Simulation *' à 'unsigned int'
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(24,23): warning C4244: 'argument' : conversion de '__int64' en 'unsigned int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(78,44): warning C4267: 'argument' : conversion de 'size_t' en 'const int', perte possible de données
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(102,101): warning C4311: 'cast de type' : troncation de pointeur de '_Ty' à 'unsigned int'
+          with
+          [
+              _Ty=Particle *
+          ]
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(102,101): warning C4302: 'cast de type' : troncation de '_Ty' à 'unsigned int'
+          with
+          [
+              _Ty=Particle *
+          ]
+C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\simulation.cpp(324,30): warning C4244: '=' : conversion de 'float' en 'int', perte possible de données
   Génération de code en cours
-  1 of 331 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+  2 of 332 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    3 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   sandbox.vcxproj -> C:\Users\tom\Documents\programation\c++\projects\sandbox\sandbox\x64\Release\sandbox.exe

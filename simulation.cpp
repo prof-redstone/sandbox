@@ -27,6 +27,7 @@ Simulation::Simulation(int nbC, int nbR,int  sP) {
 	mousePresse = false;
 	mouseStillPresse = 0;
 	mouseType = sand;
+	pause = false;
 
 
 	sizePixel = sP;
@@ -54,6 +55,7 @@ void Simulation::UpdateMove(sf::RenderWindow& window) {
 		Mouse mouse;
 		int x = mouse.getPosition(window).x / sizePixel;
 		int y = mouse.getPosition(window).y / sizePixel;
+		//pour placer l'element selectionne par l'utilisateur
 		HandPlace(x, y, mouseType);
 
 		mouseLastX = x;
@@ -62,10 +64,11 @@ void Simulation::UpdateMove(sf::RenderWindow& window) {
 		mouseStillPresse = 0;
 	}
 
-
-	for (int i = 0; i < nbCols; i++) {
-		for (int j = 0; j < nbRows; j++) {
-			particleCollect[i][j]->UpdateMove(i, j);
+	if (!pause) {
+		for (int i = 0; i < nbCols; i++) {
+			for (int j = 0; j < nbRows; j++) {
+				particleCollect[i][j]->UpdateMove(i, j);
+			}
 		}
 	}
 }
@@ -170,6 +173,9 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		{
 			return "FPS DOWN";
 		}
+		if (event.key.code == Keyboard::Space) {
+			pause = !pause;
+		}
 
 		if (event.key.code == Keyboard::T){
 			mouseType = stone;
@@ -209,6 +215,9 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		}
 		if (event.key.code == Keyboard::G) {
 			mouseType = ice;
+		}
+		if (event.key.code == Keyboard::B) {
+			mouseType = bedrock;
 		}
 	}
 	return "0";

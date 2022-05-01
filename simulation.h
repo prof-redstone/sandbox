@@ -20,6 +20,7 @@ public:
 	int mouseType;
 	int mouseLastX = -1;
 	int mouseLastY = -1;
+	bool pause;
 
 	int sizePixel;
 	int nbRows;
