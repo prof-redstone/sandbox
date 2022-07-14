@@ -6,25 +6,22 @@ This is my c++ sanbox simulation made from scratch using only the SFML library f
 
 Below you will see a list of custom materials and propreties assiociated ith them.
 
-
 ## Materials
 
-|Material|Liquid|Solid (no gravity)|Sand-like|Settable on fire|Evaporates with heat|Corrodible|Can generate heat|Water soluble|
-|:-------|:----:|:----------------:|:-------:|:--------------:|:------------------:|:--------:|:---------------:|:-----------:|
-|Sand    |      |                  |    ✅   |                |                    |    ✅    |                 |             |
-|Water   |  ✅  |                  |         |                |         ✅         |          |                 |             |
-|Stone   |      |        ✅        |         |                |                    |    ✅    |                 |             |
-|Wood    |      |        ✅        |         |        ✅      |                   |      ✅   |        ✅      |             |
-|Salt    |      |                  |   ✅    |                |                    |    ✅    |                 |      ✅     |
-|Oil     |  ✅  |                  |         |       ✅       |                    |   ✅     |        ✅       |             |
-|Lava    |  ✅  |                  |         |                |                    |          |       ✅        |             |
-|Coal    |      |                  |    ✅   |       ✅       |                    |    ✅    |       ✅        |             |
-|Snow    |      |                  |    ✅   |                |         ✅         |          |                 |      ✅     |
-|Ice     |      |        ✅        |         |                |         ✅         |          |                 |      ✅     |
-|Acid    |  ✅  |                  |         |                |                    |          |                 |             |
-|Bedrock |      |       ✅         |         |                |                    |          |                 |             |
-
-
+| Material | Sand-like | Liquid | Solid (no gravity) | Settable on fire | Evaporates with heat | Corrodible | Can generate heat | Water soluble |
+|:-------- |:---------:|:------:|:------------------:|:----------------:|:--------------------:|:----------:|:-----------------:|:-------------:|
+| Sand     | ✅         |        |                    |                  |                      | ✅          |                   |               |
+| Water    |           | ✅      |                    |                  | ✅                    |            |                   |               |
+| Stone    |           |        | ✅                  |                  |                      | ✅          |                   |               |
+| Wood     |           |        | ✅                  | ✅                |                      | ✅          | ✅                 |               |
+| Salt     | ✅         |        |                    |                  |                      | ✅          |                   | ✅             |
+| Oil      |           | ✅      |                    | ✅                |                      | ✅          | ✅                 |               |
+| Lava     |           | ✅      |                    |                  |                      |            | ✅                 |               |
+| Coal     | ✅         |        |                    | ✅                |                      | ✅          | ✅                 |               |
+| Snow     | ✅         |        |                    |                  | ✅                    |            |                   | ✅             |
+| Ice      |           |        | ✅                  |                  | ✅                    |            |                   | ✅             |
+| Acid     |           | ✅      |                    |                  |                      |            |                   |               |
+| Bedrock  |           |        | ✅                  |                  |                      |            |                   |               |
 
 **special elements :**
 
@@ -35,8 +32,6 @@ Below you will see a list of custom materials and propreties assiociated ith the
 - steam : generated when water is heated, float up and after a moment cooldown back to water and raindrops.
 
 - salt-water : produced by dissolving salt in water, will generate steam and salt cell when heated.
-
-
 
 ## Examples
 
