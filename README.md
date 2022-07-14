@@ -8,20 +8,20 @@ Below you will see a list of custom materials and propreties assiociated ith the
 
 ## Materials
 
-| Material | Sand-like | Liquid | Solid (no gravity) | Settable on fire | Evaporates with heat | Corrodible | Can generate heat | Water soluble |
-|:-------- |:---------:|:------:|:------------------:|:----------------:|:--------------------:|:----------:|:-----------------:|:-------------:|
-| Sand     | ✅         |        |                    |                  |                      | ✅          |                   |               |
-| Water    |           | ✅      |                    |                  | ✅                    |            |                   |               |
-| Stone    |           |        | ✅                  |                  |                      | ✅          |                   |               |
-| Wood     |           |        | ✅                  | ✅                |                      | ✅          | ✅                 |               |
-| Salt     | ✅         |        |                    |                  |                      | ✅          |                   | ✅             |
-| Oil      |           | ✅      |                    | ✅                |                      | ✅          | ✅                 |               |
-| Lava     |           | ✅      |                    |                  |                      |            | ✅                 |               |
-| Coal     | ✅         |        |                    | ✅                |                      | ✅          | ✅                 |               |
-| Snow     | ✅         |        |                    |                  | ✅                    |            |                   | ✅             |
-| Ice      |           |        | ✅                  |                  | ✅                    |            |                   | ✅             |
-| Acid     |           | ✅      |                    |                  |                      |            |                   |               |
-| Bedrock  |           |        | ✅                  |                  |                      |            |                   |               |
+| Material | Sand-like | Liquid | Solid (no gravity) | Settable on fire | Can generate heat | Evaporates with heat | Corrodible | Water soluble |
+|:-------- |:---------:|:------:|:------------------:|:----------------:|:-----------------:|:--------------------:|:----------:|:-------------:|
+| Sand     | ✅         |        |                    |                  |                   |                      | ✅          |               |
+| Water    |           | ✅      |                    |                  |                   | ✅                    |            |               |
+| Stone    |           |        | ✅                  |                  |                   |                      | ✅          |               |
+| Wood     |           |        | ✅                  | ✅                | ✅                 |                      | ✅          |               |
+| Salt     | ✅         |        |                    |                  |                   |                      | ✅          | ✅             |
+| Oil      |           | ✅      |                    | ✅                | ✅                 |                      | ✅          |               |
+| Lava     |           | ✅      |                    |                  | ✅                 |                      |            |               |
+| Coal     | ✅         |        |                    | ✅                | ✅                 |                      | ✅          |               |
+| Snow     | ✅         |        |                    |                  |                   | ✅                    |            | ✅             |
+| Ice      |           |        | ✅                  |                  |                   | ✅                    |            | ✅             |
+| Acid     |           | ✅      |                    |                  |                   |                      |            |               |
+| Bedrock  |           |        | ✅                  |                  |                   |                      |            |               |
 
 **special elements :**
 
@@ -52,6 +52,26 @@ Acid destroys stone and organic matter.
 <img title="" src="img/ice_snow.gif" alt="Example of ice turning into steam due to the lava" width="500">
 
 Snow and ice melt on contact with hot materials such as lava, and turn into water then steam.
+
+
+
+## Controls :
+
+
+
+| Controls | Sand | Water | Stone | Wood | Salt | Oil | Lava | Coal | Snow | Ice | Acid | Bedrock | fire | air |
+| -------- |:----:|:-----:|:-----:|:----:|:----:|:---:|:----:|:----:|:----:|:---:|:----:|:-------:|:----:|:---:|
+| Keyboard | S    | W     | T     | O    | L    | I   | V    | Q    | N    | G   | C    | B       | F    | A   |
+
+Space_bar : pause simulation.
+
+Up-arrow : increase speed of simulation.
+
+Down-arrow : decrease speed of simulation.
+
+Back-space : clear all with air.
+
+
 
 ## External references :
 
