@@ -32,9 +32,9 @@ Below you will see a list of custom materials and propreties assiociated ith the
 
 - fire : air with fire set to on, can propagate heat but won't move or evolve.
 
-- steam : generated when water is heated, float up and after a moment coldowns down back to water and raindrops.
+- steam : generated when water is heated, float up and after a moment cooldown back to water and raindrops.
 
-- saltwater : produced by dissolving salt in water, will generate steam and salt cell when heated.
+- salt-water : produced by dissolving salt in water, will generate steam and salt cell when heated.
 
 
 
@@ -56,7 +56,7 @@ Acid destroys stone and organic matter.
 
 <img title="" src="img/ice_snow.gif" alt="Example of ice turning into steam due to the lava" width="500">
 
-Snow and ice melt contact with hot materials such as lava, and turn into water then steam.
+Snow and ice melt on contact with hot materials such as lava, and turn into water then steam.
 
 ## External references :
 
