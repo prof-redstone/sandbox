@@ -14,7 +14,7 @@ Below you will see a list of custom materials and propreties assiociated ith the
 |Sand    |      |                  |    ✅   |                |                    |    ✅    |                 |             |
 |Water   |  ✅  |                  |         |                |         ✅         |          |                 |             |
 |Stone   |      |        ✅        |         |                |                    |    ✅    |                 |             |
-|Wood    |      |        ✅        |   ✅    |                |       ✅           |          |                 |             |
+|Wood    |      |        ✅        |         |                |       ✅           |          |                 |             |
 |Salt    |      |                  |   ✅    |                |                    |    ✅    |                 |      ✅     |
 |Oil     |  ✅  |                  |         |       ✅       |                    |   ✅     |        ✅       |             |
 |Lava    |  ✅  |                  |         |                |                    |          |       ✅        |             |
