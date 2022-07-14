@@ -1189,8 +1189,7 @@ int Particle::GetRand(int a, int b) {
 }
 
 //to converte HSL color mode to RGBA
-sf::Color Particle::HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI)
-{
+sf::Color Particle::HSLtoRGB(double hueI, double const satI, double const darkI, double const alphaI){
     //hue : 0 : red  1 : yellow  2 : green  3 : cyan  4 : blue  5 : purple  6 : red
     //hue  0 == 6   6 is one cycle rotation
     //saturation [0;1]

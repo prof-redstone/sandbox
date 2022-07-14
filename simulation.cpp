@@ -33,7 +33,6 @@ Simulation::Simulation(int nbC, int nbR,int  sP) {
 	sizePixel = sP;
 	nbCols = nbC/sizePixel;
 	nbRows = nbR/sizePixel;
-	cout << nbRows;
 
 	particleCollect = vector<vector<Particle*>>(nbCols, vector<Particle*>(nbRows, nullptr));
 	 
@@ -218,6 +217,14 @@ String Simulation::InputHandler(sf::Event event, sf::RenderWindow& window) {
 		}
 		if (event.key.code == Keyboard::B) {
 			mouseType = bedrock;
+		}
+
+		if (event.key.code == Keyboard::BackSpace) {
+			for (int i = 0; i < nbCols; i++){
+				for (int j = 0; j < nbRows; j++) {
+					AddMove(_Replace, air, -1, i, j, i, j);
+				}
+			}
 		}
 	}
 	return "0";
