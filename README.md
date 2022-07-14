@@ -9,7 +9,7 @@ Below you will see a list of custom materials and propreties assiociated ith the
 
 ## Materials
 
-|Material|Liquid|Solid (no gravity)|Sand-like|Settable on fire|Evaporates with heat|Corrodible|Can generate heat|water soluble|
+|Material|Liquid|Solid (no gravity)|Sand-like|Settable on fire|Evaporates with heat|Corrodible|Can generate heat|Water soluble|
 |:-------|:----:|:----------------:|:-------:|:--------------:|:------------------:|:--------:|:---------------:|:-----------:|
 |Sand    |      |                  |    ✅   |                |                    |    ✅    |                 |             |
 |Water   |  ✅  |                  |         |                |         ✅         |          |                 |             |
